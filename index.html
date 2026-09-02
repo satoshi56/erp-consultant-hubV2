@@ -1,0 +1,1183 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6757e8">
+<title>ERP Consultant Hub V4.1 — Delete Fix</title>
+<style>
+:root{
+  --bg:#f6f7fb;--panel:#fff;--panel2:#f0f2f7;--text:#171923;--muted:#777d8d;--line:#e5e8ef;
+  --primary:#6757e8;--primary2:#8c7bf5;--soft:#eeeaff;--green:#2b956e;--greenSoft:#e7f7f0;
+  --amber:#ab7618;--amberSoft:#fff4dc;--red:#d34d61;--redSoft:#fff0f2;--blue:#4b72b7;--blueSoft:#ebf2ff;
+  --shadow:0 18px 55px rgba(32,35,58,.09)
+}
+html[data-theme="dark"]{
+  --bg:#101219;--panel:#181b24;--panel2:#20242f;--text:#f5f6f8;--muted:#9da4b3;--line:#2b3040;
+  --soft:#2b2551;--greenSoft:#18382e;--amberSoft:#44361e;--redSoft:#43242b;--blueSoft:#1d2d49;
+  --shadow:0 20px 60px rgba(0,0,0,.3)
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif}
+button,input,textarea,select{font:inherit;color:inherit}
+button{border:0;cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:255px 1fr}
+.sidebar{position:fixed;inset:0 auto 0 0;width:255px;padding:19px 15px;background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;z-index:40;overflow:auto}
+.brand{display:flex;align-items:center;gap:11px;padding:3px 5px 20px}
+.logo{width:47px;height:47px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),#9b8af8);color:#fff;font-weight:950;box-shadow:0 12px 29px rgba(103,87,232,.28)}
+.brand b{display:block}.brand small{display:block;color:var(--muted);font-size:.72rem;margin-top:1px}
+.btn,.navBtn,.iconBtn,.sideBtn,.tinyBtn,.templateBtn{border-radius:12px;transition:.16s}
+.btn{padding:11px 14px;font-weight:800}
+.primary{background:linear-gradient(135deg,var(--primary),var(--primary2));color:#fff;box-shadow:0 9px 22px rgba(103,87,232,.19)}
+.secondary{background:var(--panel);border:1px solid var(--line)}
+.btn:hover,.iconBtn:hover,.tinyBtn:hover{transform:translateY(-1px)}
+.wide{width:100%}
+.newRow{display:grid;grid-template-columns:1fr auto;gap:7px}
+.nav{display:grid;gap:5px;margin-top:17px}
+.navBtn{background:transparent;padding:11px 12px;text-align:left;color:var(--muted)}
+.navBtn:hover,.sideBtn:hover{background:var(--panel2);color:var(--text)}
+.navBtn.active{background:var(--soft);color:var(--primary);font-weight:850}
+.sideLabel{font-size:.68rem;letter-spacing:.12em;font-weight:900;color:var(--muted);padding:0 9px;margin:22px 0 7px}
+.sideBtn{background:transparent;padding:8px 10px;text-align:left;color:var(--muted);width:100%;border-radius:10px}
+.sideBottom{margin-top:auto;display:grid;gap:7px;padding-top:18px}
+.sideBottom button,.sideBottom label{padding:9px 11px;background:var(--panel);border:1px solid var(--line);border-radius:11px;text-align:left;cursor:pointer}
+.main{grid-column:2;min-width:0}
+.topbar{height:70px;position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(15px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:0 26px}
+.search{max-width:820px;flex:1;height:43px;background:var(--panel);border:1px solid var(--line);border-radius:13px;display:flex;align-items:center;gap:8px;padding:0 13px}
+.search input{width:100%;border:0;background:transparent;outline:0}
+.iconBtn{width:41px;height:41px;background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.mobileOnly{display:none}
+.view{display:none;max-width:1480px;margin:auto;padding:28px}.view.active{display:block}
+.hero{padding:38px;border-radius:27px;background:radial-gradient(circle at 85% 15%,rgba(255,255,255,.3),transparent 22%),linear-gradient(135deg,#5546d6,#7968ed 60%,#9484f7);color:#fff;display:grid;grid-template-columns:1.08fr .92fr;gap:28px;box-shadow:0 24px 65px rgba(80,67,205,.24)}
+.eyebrow{font-size:.7rem;letter-spacing:.15em;font-weight:900;color:var(--primary)}
+.hero .eyebrow{color:#e2ddff}
+.hero h1{font-size:clamp(2rem,4vw,3.5rem);line-height:1.05;letter-spacing:-.05em;margin:11px 0 14px}
+.hero p{line-height:1.72;color:#efecff}
+.heroBox{justify-self:end;max-width:430px;padding:21px;border:1px solid rgba(255,255,255,.24);border-radius:20px;background:rgba(255,255,255,.13)}
+.flow{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}.flow span{padding:6px 8px;background:rgba(255,255,255,.12);border-radius:8px;font-size:.75rem}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:17px 0}
+.stat,.panel,.card,.processCard,.masterCard,.inboxCard{background:var(--panel);border:1px solid var(--line);box-shadow:0 8px 22px rgba(30,34,55,.03)}
+.stat{border-radius:17px;padding:17px}.stat strong{font-size:1.45rem;display:block}.stat span{color:var(--muted);font-size:.78rem}
+.dashboardGrid{display:grid;grid-template-columns:1.05fr .95fr;gap:17px}
+.panel{border-radius:19px;padding:19px}.panelHead,.pageHead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.panelHead h2,.panelHead h3,.pageHead h1{margin:0}.panelHead p,.pageHead p{margin:4px 0;color:var(--muted);font-size:.83rem}.pageHead{margin-bottom:18px}.pageHead h1{font-size:2rem;letter-spacing:-.04em}
+.recent{display:grid;gap:9px;margin-top:14px}.recentRow{border:1px solid var(--line);border-radius:13px;padding:11px;cursor:pointer}.recentRow:hover{background:var(--panel2)}.recentRow b{display:block}.recentRow small{color:var(--muted)}
+.filters{display:grid;grid-template-columns:repeat(4,minmax(150px,220px));gap:8px;margin-bottom:16px}
+input,textarea,select{border:1px solid var(--line);background:var(--panel);border-radius:11px;padding:10px 11px;outline:0}
+input:focus,textarea:focus,select:focus{border-color:#aaa0ed;box-shadow:0 0 0 4px var(--soft)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:14px}
+.card{border-radius:18px;padding:16px;min-height:235px;display:flex;flex-direction:column;cursor:pointer;transition:.16s}.card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.pill,.tag,.status,.dueBadge,.linkBadge{display:inline-block;border-radius:999px;padding:5px 8px;font-size:.68rem;font-weight:800}
+.pill{background:var(--soft);color:var(--primary)}.tag{background:var(--panel2);color:var(--muted)}
+.status.learning{background:var(--blueSoft);color:var(--blue)}.status.usable{background:var(--amberSoft);color:var(--amber)}.status.mastered{background:var(--greenSoft);color:var(--green)}
+.dueBadge{background:var(--amberSoft);color:var(--amber)}.linkBadge{background:var(--panel2);color:var(--muted)}
+.card h3{margin:11px 0 7px}.card p{margin:0;color:var(--muted);font-size:.85rem;line-height:1.6}
+.tags,.links{display:flex;gap:5px;flex-wrap:wrap;margin-top:10px}
+.meta{font-size:.72rem;color:var(--muted);margin-top:10px}.foot{margin-top:auto;padding-top:14px;display:flex;justify-content:space-between;align-items:center}
+.star{background:transparent;font-size:1.1rem;color:#c1c4cd}.star.on{color:#eeaa23}
+.processGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.processCard{border-radius:18px;padding:17px;cursor:pointer;transition:.16s}.processCard:hover{transform:translateY(-2px);box-shadow:var(--shadow)}.processCard h3{margin:9px 0 7px}.processCard p{margin:0;color:var(--muted);font-size:.82rem}.processSteps{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}.step{padding:6px 8px;background:var(--panel2);border-radius:8px;font-size:.72rem}
+.coverageBar{height:7px;background:var(--panel2);border-radius:99px;overflow:hidden;margin-top:12px}.coverageBar span{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2))}
+.inboxGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:13px}.inboxCard{border-radius:17px;padding:15px}.inboxCard h3{margin:8px 0}.inboxCard p{color:var(--muted);font-size:.84rem;white-space:pre-wrap}.inboxActions{display:flex;gap:7px;margin-top:12px}
+.empty{grid-column:1/-1;text-align:center;padding:48px 18px;border:1px dashed var(--line);border-radius:18px;background:var(--panel)}.empty h3{margin:8px 0}.empty p{margin:0 0 14px;color:var(--muted)}
+.overlay{position:fixed;inset:0;background:rgba(14,16,25,.46);opacity:0;pointer-events:none;z-index:50;transition:.2s}.overlay.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;right:0;top:0;width:min(840px,100%);height:100vh;background:var(--panel);z-index:60;transform:translateX(102%);transition:.24s;display:flex;flex-direction:column;box-shadow:-28px 0 70px rgba(15,17,28,.25)}.drawer.on{transform:translateX(0)}
+.drawerHead{padding:18px 21px 11px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.drawerHead h2{margin:3px 0}.auto{padding:7px 21px;border-bottom:1px solid var(--line);font-size:.72rem;color:var(--muted)}
+.drawerBody{padding:21px;overflow:auto}.drawerBody label{display:block;font-size:.77rem;font-weight:900;margin:13px 0 6px}.drawerBody input,.drawerBody textarea,.drawerBody select{width:100%}.big{font-size:1.17rem;font-weight:800}.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}.area{min-height:92px;resize:vertical}.content{min-height:160px;resize:vertical;line-height:1.6}.divider{height:1px;background:var(--line);margin:22px 0}
+.templates{display:flex;gap:6px;flex-wrap:wrap}.templateBtn{padding:6px 9px;border:1px solid var(--line);background:var(--panel2);font-size:.7rem;border-radius:999px}.templateBtn.active{background:var(--soft);color:var(--primary);border-color:transparent}
+.drop{border:1.5px dashed #b9b4dd;border-radius:15px;padding:16px;text-align:center;background:color-mix(in srgb,var(--soft) 45%,var(--panel))}.drop.drag{background:var(--soft)}.drop p{margin:5px;color:var(--muted);font-size:.78rem}.hidden{display:none!important}
+.attachments{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:9px;margin-top:10px}.att{border:1px solid var(--line);border-radius:13px;padding:9px;background:var(--panel2);min-width:0}.att img{width:100%;height:105px;object-fit:cover;border-radius:8px}.fileIcon{height:76px;display:grid;place-items:center;font-size:2rem}.attName{font-size:.74rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:6px}.att small{color:var(--muted)}.attBtns{display:flex;gap:5px;margin-top:7px}.attBtns button{flex:1;padding:5px;background:var(--panel);border:1px solid var(--line);font-size:.66rem;border-radius:8px}
+.flash{border:1px solid var(--line);background:var(--bg);border-radius:13px;padding:10px;margin-top:8px}.flashTop{display:flex;justify-content:space-between;font-size:.68rem;color:var(--muted)}.flash textarea{min-height:62px;margin-top:6px;resize:vertical}
+.relatedBox{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--panel2)}.relatedList{max-height:180px;overflow:auto;display:grid;gap:6px;margin-top:8px}.relatedItem{display:flex;gap:8px;align-items:center;padding:7px;background:var(--panel);border-radius:9px}.relatedItem input{width:auto}
+.drawerFoot{padding:12px 21px;border-top:1px solid var(--line);display:flex;justify-content:space-between}.danger{background:transparent;color:var(--red);font-weight:800}.actions{display:flex;gap:7px}
+.review{max-width:800px;margin:28px auto}.reviewMeta{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}.reviewMeta div{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:11px;text-align:center}.reviewMeta strong{display:block}.reviewMeta small{color:var(--muted)}
+.reviewCard{min-height:340px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:28px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;box-shadow:var(--shadow)}.reviewCard h2{font-size:clamp(1.4rem,4vw,2.1rem);line-height:1.45}.answer{width:100%;max-width:640px;padding:16px;background:var(--panel2);border-radius:14px}.reviewBtns{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin-top:13px}.hard{background:var(--redSoft);color:var(--red)}.ok{background:var(--amberSoft);color:var(--amber)}.easy{background:var(--greenSoft);color:var(--green)}
+.summaryBox{max-width:820px;margin:28px auto;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:23px;text-align:center}.score{font-size:2.8rem;font-weight:900;color:var(--primary)}.result{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}.result div{background:var(--panel2);border-radius:12px;padding:11px}.result strong{display:block}.result small{color:var(--muted)}
+.modal{position:fixed;left:50%;top:50%;transform:translate(-50%,-48%) scale(.98);width:min(900px,94vw);max-height:86vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:22px;z-index:70;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.18s}.modal.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+.modalHead{display:flex;justify-content:space-between;align-items:flex-start;padding:20px;border-bottom:1px solid var(--line)}.modalHead h2{margin:0}.modalBody{padding:20px}.masterGrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.masterCard{border-radius:17px;padding:16px}.masterCard h3{margin:0 0 5px}.masterCard p{margin:0 0 13px;color:var(--muted);font-size:.8rem}.addMaster{display:grid;grid-template-columns:1fr auto;gap:7px}.masterList{display:grid;gap:7px;margin-top:12px}.masterItem{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;padding:8px;border-radius:11px;background:var(--panel2)}.masterItem span{font-size:.84rem;font-weight:700}.tinyBtn{padding:6px 8px;background:var(--panel);border:1px solid var(--line);font-size:.68rem}.tinyBtn.delete{color:var(--red)}
+.quickModal{width:min(620px,94vw)}.quickModal textarea{width:100%;min-height:150px;resize:vertical}
+.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,15px);opacity:0;background:#252936;color:#fff;padding:9px 13px;border-radius:10px;z-index:90;transition:.2s}.toast.on{opacity:1;transform:translate(-50%,0)}
+
+.sideGroup{margin-top:20px}
+.sideToggle{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:transparent;color:var(--muted);padding:7px 9px;border-radius:10px;font-size:.68rem;letter-spacing:.11em;font-weight:900}
+.sideToggle:hover{background:var(--panel2);color:var(--text)}
+.sideToggle .chev{font-size:.8rem;transition:.18s;letter-spacing:0}
+.sideGroup.collapsed .chev{transform:rotate(-90deg)}
+.sideGroupBody{display:grid;grid-template-rows:1fr;transition:grid-template-rows .2s ease}
+.sideGroupBody>div{overflow:hidden}
+.sideGroup.collapsed .sideGroupBody{grid-template-rows:0fr}
+.sideGroupList{max-height:205px;overflow:auto;padding-right:2px}
+.sideGroupList::-webkit-scrollbar{width:5px}.sideGroupList::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+.cloudBtn{height:41px;padding:0 12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;font-size:.75rem;font-weight:800;white-space:nowrap}
+.cloudBtn.connected{background:var(--greenSoft);color:var(--green);border-color:transparent}
+.cloudBtn.syncing{background:var(--soft);color:var(--primary);border-color:transparent}
+.cloudBtn.dirty{background:var(--amberSoft);color:var(--amber);border-color:transparent}
+.cloudBtn.conflict{background:var(--redSoft);color:var(--red);border-color:transparent}
+.cloudStatusPanel{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--panel2);margin-bottom:14px}
+.cloudStatusRow{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.cloudStatusMain{font-weight:900}.cloudStatusSub{font-size:.76rem;color:var(--muted);margin-top:3px}
+.cloudActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.cloudSetup{border-top:1px solid var(--line);padding-top:15px;margin-top:15px}
+.cloudSetup h3{margin:0 0 7px}.cloudSetup p{color:var(--muted);font-size:.8rem;line-height:1.55;margin:5px 0}
+.cloudSetup code{font-size:.74rem;background:var(--panel2);padding:3px 5px;border-radius:6px;word-break:break-all}
+.cloudGrid{display:grid;grid-template-columns:1fr auto;gap:7px}
+.cloudNote{padding:10px 12px;border-radius:12px;background:var(--blueSoft);color:var(--blue);font-size:.77rem;line-height:1.55;margin-top:12px}
+.onlineDot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:6px}
+.offlineDot{background:var(--red)}
+
+
+.trashGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:14px}
+.trashCard{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 8px 22px rgba(30,34,55,.03)}
+.trashCard h3{margin:9px 0 6px}.trashCard p{margin:0;color:var(--muted);font-size:.84rem;line-height:1.55}
+.trashActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:13px}
+.trashActions .btn{padding:8px 10px;font-size:.76rem}
+.btnDanger{background:var(--redSoft);color:var(--red);border:1px solid color-mix(in srgb,var(--red) 22%,var(--line))}
+.busy{opacity:.58;pointer-events:none}
+
+
+.processEditorChecks{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:7px;margin-top:8px}
+.processModuleCheck{display:flex;align-items:center;gap:8px;padding:9px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;font-size:.78rem}
+.processModuleCheck input{width:auto;margin:0}
+.mappingHint{margin-top:8px;color:var(--muted);font-size:.74rem;line-height:1.5}
+.masterMap{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
+.masterMap .tag{font-size:.62rem}
+
+@media(max-width:1050px){.hero{grid-template-columns:1fr}.heroBox{justify-self:start}.dashboardGrid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.app{display:block}.sidebar{width:min(285px,86vw);transform:translateX(-102%);transition:.22s}.sidebar.on{transform:translateX(0)}.main{grid-column:auto}.mobileOnly{display:block}.topbar{height:64px;padding:0 13px}.view{padding:17px}.hero{padding:26px 21px}.g2,.g3,.filters,.masterGrid{grid-template-columns:1fr}.drawerFoot{flex-direction:column;gap:8px}.reviewMeta{grid-template-columns:1fr}.result{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.stats{grid-template-columns:1fr}.grid,.processGrid,.inboxGrid{grid-template-columns:1fr}.pageHead{flex-direction:column}.newRow{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="logo">ERP</div><div><b>Consultant Hub</b><small>Knowledge • Drive • Review</small></div></div>
+  <div class="newRow"><button class="btn primary wide" id="newKnowledgeBtn">＋ Knowledge</button><button class="iconBtn" id="quickCaptureBtn" title="Quick Capture">⚡</button></div>
+  <nav class="nav">
+    <button class="navBtn active" data-view="dashboard">⌂ Dashboard</button>
+    <button class="navBtn" data-view="knowledge">▤ Knowledge</button>
+    <button class="navBtn" data-view="processes">⇄ Process Map</button>
+    <button class="navBtn" data-view="inbox">⌁ Inbox</button>
+    <button class="navBtn" data-view="trash">♲ Trash</button>
+    <button class="navBtn" data-view="learning">◫ Review</button>
+  </nav>
+  <div class="sideGroup" id="moduleGroup">
+    <button class="sideToggle" id="moduleToggle" type="button"><span>MODULES</span><span class="chev">⌄</span></button>
+    <div class="sideGroupBody"><div><div class="sideGroupList" id="moduleList"></div></div></div>
+  </div>
+  <div class="sideGroup" id="processGroup">
+    <button class="sideToggle" id="processToggle" type="button"><span>PROCESSES</span><span class="chev">⌄</span></button>
+    <div class="sideGroupBody"><div><div class="sideGroupList" id="processList"></div></div></div>
+  </div>
+  <div class="sideBottom">
+    <button id="manageMastersBtn">⚙ จัดการ Module & Process</button>
+    <button id="themeBtn">◐ เปลี่ยนธีม</button>
+    <button id="exportBtn">⇩ สำรองข้อมูลทั้งหมด</button>
+    <label for="importFile">⇧ นำเข้าข้อมูล</label><input id="importFile" class="hidden" type="file" accept=".json">
+  </div>
+</aside>
+
+<main class="main">
+<header class="topbar"><button class="iconBtn mobileOnly" id="menuBtn">☰</button><div class="search">⌕ <input id="searchInput" placeholder="ค้นหา Knowledge, Module, Process, Tag, Scenario..."></div><button class="cloudBtn" id="cloudStatusBtn">☁ Drive</button><button class="iconBtn" id="themeBtn2">◐</button></header>
+
+<section class="view active" id="dashboardView">
+  <div class="hero">
+    <div><div class="eyebrow">ERP CONSULTANT KNOWLEDGE SYSTEM</div><h1>ERP Knowledge</h1><p>จดแบบ Consultant: Business Scenario → Process → Solution → Impact → Review พร้อมเชื่อม Knowledge ที่เกี่ยวข้องและทบทวนตามรอบที่เหมาะสม</p><div class="actions"><button class="btn primary" id="heroNewBtn">＋ เพิ่ม Knowledge</button><button class="btn secondary" id="heroQuickBtn">⚡ Quick Capture</button></div></div>
+    <div class="heroBox"><div class="eyebrow">LEARNING LOOP</div><h3>Capture → Structure → Connect → Review</h3><p>จดเร็วเข้า Inbox ก่อน แล้วค่อยจัดเป็น Knowledge เชื่อม Process/Module และกลับมาทบทวนเฉพาะการ์ดที่ถึงกำหนด</p><div class="flow"><span>Inbox</span><span>Knowledge</span><span>Related</span><span>Process Map</span><span>Spaced Review</span></div></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><strong id="statKnowledge">0</strong><span>Knowledge</span></div>
+    <div class="stat"><strong id="statInbox">0</strong><span>Inbox</span></div>
+    <div class="stat"><strong id="statDue">0</strong><span>Due for Review</span></div>
+    <div class="stat"><strong id="statCoverage">0</strong><span>Processes with Knowledge</span></div>
+  </div>
+
+  <div class="dashboardGrid">
+    <div class="panel"><div class="panelHead"><div><h2>Knowledge ล่าสุด</h2><p>กลับไปต่อจากสิ่งที่เพิ่งเรียน</p></div></div><div id="recentKnowledge" class="recent"></div></div>
+    <div class="panel"><div class="panelHead"><div><h2>ควรทำต่อ</h2><p>Inbox และ Flashcard ที่ถึงกำหนด</p></div></div><div id="nextActions" class="recent"></div></div>
+  </div>
+</section>
+
+<section class="view" id="knowledgeView">
+  <div class="pageHead"><div><div class="eyebrow">KNOWLEDGE LIBRARY</div><h1>ERP Knowledge</h1><p>Feature, Configuration, Process, Integration, Troubleshooting และ Best Practice</p></div><button class="btn primary" data-new>＋ Knowledge</button></div>
+  <div class="filters">
+    <select id="typeFilter"></select><select id="moduleFilter"></select><select id="processFilter"></select>
+    <select id="statusFilter"><option value="">ทุกระดับ</option><option value="learning">กำลังเรียน</option><option value="usable">ใช้งานได้</option><option value="mastered">อธิบายคนอื่นได้</option></select>
+  </div>
+  <div class="grid" id="knowledgeGrid"></div>
+</section>
+
+<section class="view" id="processesView">
+  <div class="pageHead"><div><div class="eyebrow">PROCESS-ORIENTED VIEW</div><h1>Business Process Map</h1><p>กด Process เพื่อดู Knowledge ที่เกี่ยวข้อง และเห็น Coverage ของแต่ละ Process</p></div><button class="btn secondary" id="manageMastersBtn2">⚙ จัดการ Process</button></div>
+  <div class="processGrid" id="processGrid"></div>
+</section>
+
+<section class="view" id="inboxView">
+  <div class="pageHead"><div><div class="eyebrow">QUICK CAPTURE</div><h1>Inbox</h1><p>เก็บสิ่งที่นึกได้ระหว่างประชุม ดู Demo หรือเรียนเรื่องใหม่ แล้วค่อย Convert เป็น Knowledge</p></div><button class="btn primary" id="quickCaptureBtn2">⚡ Quick Capture</button></div>
+  <div class="inboxGrid" id="inboxGrid"></div>
+</section>
+
+
+<section class="view" id="trashView">
+  <div class="pageHead"><div><div class="eyebrow">RECYCLE BIN</div><h1>Trash</h1><p>Knowledge ที่ลบจะมาอยู่ที่นี่ก่อน สามารถกู้คืนหรือลบถาวรได้</p></div><button class="btn secondary" id="emptyTrashBtn">ล้างถังขยะ</button></div>
+  <div class="trashGrid" id="trashGrid"></div>
+</section>
+
+<section class="view" id="learningView">
+  <div class="pageHead"><div><div class="eyebrow">SPACED REPETITION</div><h1>Review</h1><p>ทบทวนเฉพาะ Flashcard ที่ถึงกำหนด และระบบจะกำหนดวันถัดไปตามผลที่ตอบ</p></div><button class="btn secondary" id="reviewAllBtn">ทบทวนทั้งหมด</button></div>
+  <div id="reviewArea"></div>
+</section>
+</main>
+</div>
+
+<div class="overlay" id="overlay"></div>
+
+<section class="drawer" id="editorDrawer">
+  <div class="drawerHead"><div><div class="eyebrow" id="editorEyebrow">NEW KNOWLEDGE</div><h2 id="editorHeading">เพิ่ม ERP Knowledge</h2></div><button class="iconBtn" id="closeEditorBtn">✕</button></div>
+  <div class="auto" id="autosaveState">พร้อมบันทึก • Autosave</div>
+  <div class="drawerBody">
+    <label>ประเภท Knowledge</label>
+    <div class="templates" id="templateButtons"></div>
+
+    <label>หัวข้อ</label><input id="title" class="big" placeholder="เช่น Credit Limit Control">
+    <div class="g3">
+      <div><label>ระดับความเข้าใจ</label><select id="status"><option value="learning">กำลังเรียน</option><option value="usable">ใช้งานได้</option><option value="mastered">อธิบายคนอื่นได้</option></select></div>
+      <div><label>Module</label><select id="module"></select></div>
+      <div><label>Business Process</label><select id="process"></select></div>
+    </div>
+
+    <div id="scenarioSection"><label id="scenarioLabel">Business Scenario / Requirement</label><textarea id="scenario" class="area"></textarea></div>
+    <div id="summarySection"><label id="summaryLabel">สรุปแนวคิด</label><textarea id="summary" class="area"></textarea></div>
+    <div id="contentSection"><label id="contentLabel">Solution / Configuration / How-to</label><textarea id="content" class="content"></textarea></div>
+    <div class="g2">
+      <div id="impactSection"><label id="impactLabel">Impact / Integration</label><textarea id="impact" class="area"></textarea></div>
+      <div id="keysSection"><label id="keysLabel">สิ่งที่ต้องจำ</label><textarea id="keys" class="area"></textarea></div>
+    </div>
+    <div id="followupSection"><label>Follow-up / คำถามที่ยังต้องหาคำตอบ</label><textarea id="followup" class="area"></textarea></div>
+    <label>Tags</label><input id="tags" placeholder="credit, sales-order, AR">
+
+    <div class="divider"></div>
+    <div class="panelHead"><div><h3>Related Knowledge</h3><p>เชื่อมหัวข้อนี้กับ Knowledge ที่เกี่ยวข้อง</p></div></div>
+    <div class="relatedBox"><input id="relatedSearch" placeholder="ค้นหา Knowledge ที่ต้องการเชื่อม..."><div class="relatedList" id="relatedList"></div></div>
+
+    <div class="divider"></div>
+    <div class="panelHead"><div><h3>ไฟล์ / รูปภาพแนบ</h3><p>Screenshot, PDF, Excel, Word หรือ Reference</p></div></div>
+    <div class="drop" id="dropZone"><b>ลากไฟล์มาวางที่นี่</b><p>หรือเลือกหลายไฟล์ได้ • รูปภาพมี Preview</p><button type="button" class="btn secondary" id="pickFilesBtn">＋ เลือกไฟล์</button><input id="fileInput" class="hidden" type="file" multiple></div>
+    <div class="attachments" id="attachments"></div>
+
+    <div class="divider"></div>
+    <div class="panelHead"><div><h3>Flashcard / Scenario Review</h3><p>ระบบจะจัดวันทบทวนถัดไปให้อัตโนมัติ</p></div><button type="button" class="btn secondary" id="addFlashBtn">＋ คำถาม</button></div>
+    <div id="flashList"></div>
+  </div>
+  <div class="drawerFoot"><button class="danger" id="trashBtn">ย้ายไปถังขยะ</button><div class="actions"><button class="btn secondary" id="favoriteBtn">☆ Favorite</button><button class="btn primary" id="saveBtn">บันทึก</button></div></div>
+</section>
+
+<section class="modal" id="masterModal">
+  <div class="modalHead"><div><div class="eyebrow">MASTER DATA</div><h2>จัดการ Module & Process</h2><p style="margin:5px 0 0;color:var(--muted);font-size:.82rem">เพิ่ม ลบ เปลี่ยนชื่อ กำหนดขั้นตอน และผูก Process กับ Module ได้เอง</p></div><button class="iconBtn" id="closeMasterBtn">✕</button></div>
+  <div class="modalBody">
+    <div class="masterGrid">
+      <div class="masterCard"><h3>ERP Modules</h3><p>ใช้ในตัวกรองและหน้า Knowledge Editor</p><div class="addMaster"><input id="newModuleName" placeholder="ชื่อ Module ใหม่"><button class="btn primary" id="addModuleBtn">＋ เพิ่ม</button></div><div class="masterList" id="masterModules"></div></div>
+      <div class="masterCard"><h3>Business Processes</h3><p>กำหนดว่า Process ใช้กับ Module ไหนได้หลาย Module</p><div class="addMaster"><input id="newProcessName" placeholder="ชื่อ Process ใหม่"><button class="btn primary" id="addProcessBtn">＋ เพิ่ม</button></div><div class="masterList" id="masterProcesses"></div></div>
+    </div>
+  </div>
+</section>
+
+
+<section class="modal" id="processEditorModal" style="z-index:78;width:min(650px,94vw)">
+  <div class="modalHead">
+    <div><div class="eyebrow">PROCESS MASTER</div><h2 id="processEditorTitle">เพิ่ม Process</h2><p style="margin:5px 0 0;color:var(--muted);font-size:.82rem">ผูก Process กับ Module เพื่อให้รายการ Process ถูกกรองอัตโนมัติ</p></div>
+    <button class="iconBtn" id="closeProcessEditorBtn">✕</button>
+  </div>
+  <div class="modalBody">
+    <label style="display:block;font-size:.77rem;font-weight:900;margin:0 0 6px">ชื่อ Process</label>
+    <input id="processEditName" class="big" placeholder="เช่น Order to Cash">
+    <label style="display:block;font-size:.77rem;font-weight:900;margin:14px 0 6px">Process Steps</label>
+    <input id="processEditSteps" placeholder="Quotation, Sales Order, Delivery, Invoice, Payment">
+    <label style="display:block;font-size:.77rem;font-weight:900;margin:14px 0 6px">ใช้กับ Module</label>
+    <div class="processEditorChecks" id="processModuleChecks"></div>
+    <div class="mappingHint">เลือกได้มากกว่า 1 Module เช่น Order to Cash อาจใช้กับ Sales, Inventory และ Finance เมื่อเลือก Module ใน Knowledge ระบบจะแสดงเฉพาะ Process ที่ผูกไว้</div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px">
+      <button class="btn secondary" id="cancelProcessEditorBtn">ยกเลิก</button>
+      <button class="btn primary" id="saveProcessEditorBtn">บันทึก Process</button>
+    </div>
+  </div>
+</section>
+
+<section class="modal quickModal" id="quickModal">
+  <div class="modalHead"><div><div class="eyebrow">QUICK CAPTURE</div><h2>จดไว้ก่อน จัดทีหลัง</h2></div><button class="iconBtn" id="closeQuickBtn">✕</button></div>
+  <div class="modalBody">
+    <label>หัวข้อสั้น ๆ</label><input id="quickTitle" class="big" placeholder="เช่น ถามเรื่อง Partial Delivery">
+    <label style="display:block;margin:13px 0 6px;font-size:.77rem;font-weight:900">รายละเอียด</label><textarea id="quickText" placeholder="สิ่งที่ได้ยิน สิ่งที่สงสัย หรือสิ่งที่อยากกลับมาศึกษา..."></textarea>
+    <div class="g2" style="margin-top:10px"><select id="quickModule"></select><select id="quickProcess"></select></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:14px"><button class="btn primary" id="saveQuickBtn">บันทึกเข้า Inbox</button></div>
+  </div>
+</section>
+
+
+<section class="modal" id="confirmModal" style="z-index:85;width:min(520px,92vw)">
+  <div class="modalHead"><div><div class="eyebrow">CONFIRM ACTION</div><h2 id="confirmTitle">ยืนยันการทำรายการ</h2></div></div>
+  <div class="modalBody">
+    <p id="confirmMessage" style="margin:0;color:var(--muted);line-height:1.65;white-space:pre-line"></p>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:20px">
+      <button class="btn secondary" id="confirmCancelBtn">ยกเลิก</button>
+      <button class="btn" id="confirmOkBtn" style="background:var(--red);color:#fff">ยืนยัน</button>
+    </div>
+  </div>
+</section>
+
+<section class="modal" id="cloudModal">
+  <div class="modalHead">
+    <div><div class="eyebrow">GOOGLE DRIVE SYNC</div><h2>Cloud Sync</h2><p style="margin:5px 0 0;color:var(--muted);font-size:.82rem">ใช้งานหลายเครื่องโดยให้ Google Drive เป็น Cloud Storage ของคุณเอง</p></div>
+    <button class="iconBtn" id="closeCloudBtn">✕</button>
+  </div>
+  <div class="modalBody">
+    <div class="cloudStatusPanel">
+      <div class="cloudStatusRow">
+        <div><div class="cloudStatusMain" id="cloudModalStatus">ยังไม่ได้เชื่อม Google Drive</div><div class="cloudStatusSub" id="cloudModalDetail">ข้อมูลในเครื่องยังใช้งานได้ตามปกติ</div></div>
+        <span id="networkStatus"><span class="onlineDot"></span>Online</span>
+      </div>
+      <div class="cloudActions">
+        <button class="btn primary" id="connectDriveBtn">เชื่อม Google Drive</button>
+        <button class="btn secondary" id="syncDriveBtn">↻ Sync now</button>
+        <button class="btn secondary" id="uploadDriveBtn">↑ ใช้ข้อมูลเครื่องนี้</button>
+        <button class="btn secondary" id="downloadDriveBtn">↓ โหลดจาก Drive</button>
+        <button class="btn secondary" id="openDriveFolderBtn">เปิดโฟลเดอร์ Drive</button>
+        <button class="btn secondary" id="disconnectDriveBtn">ยกเลิกการเชื่อมต่อ</button>
+      </div>
+    </div>
+
+    <div>
+      <label style="display:block;font-size:.77rem;font-weight:900;margin:0 0 6px">Google OAuth Client ID</label>
+      <div class="cloudGrid"><input id="googleClientId" placeholder="xxxxxxxx.apps.googleusercontent.com"><button class="btn secondary" id="saveClientIdBtn">บันทึก</button></div>
+      <div class="cloudNote">🔒 แอปขอสิทธิ์ <b>drive.file</b> เท่านั้น เพื่อจัดการเฉพาะไฟล์ที่ ERP Consultant Hub สร้างหรือใช้งาน ไม่ได้ขอสิทธิ์อ่าน Google Drive ทั้งหมด</div>
+    </div>
+
+    <div class="cloudSetup">
+      <h3>ตั้งค่าครั้งแรก</h3>
+      <p>1) เปิด Google Cloud Console → สร้าง Project → เปิดใช้งาน <b>Google Drive API</b></p>
+      <p>2) สร้าง OAuth Client ประเภท <b>Web application</b> แล้วใส่ URL ที่คุณ Host แอปไว้ใน <b>Authorized JavaScript origins</b></p>
+      <p>3) นำ Client ID มาวางด้านบน แล้วกด “เชื่อม Google Drive”</p>
+      <p>Origin ปัจจุบัน: <code id="currentOrigin"></code></p>
+      <p>การเชื่อม Google ต้องเปิดแอปผ่าน <b>HTTPS</b> หรือ <b>localhost</b> การเปิดจาก <code>file://</code> ยังใช้ Local Mode ได้ แต่ Google OAuth จะไม่ทำงาน</p>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+const TYPES={
+  feature:{name:"Feature / How-to",scenario:"Business Scenario / ใช้เมื่อไร",summary:"แนวคิดหลัก",content:"วิธีใช้งาน / ขั้นตอน",impact:"เกี่ยวข้องกับอะไรบ้าง",keys:"สิ่งที่ต้องจำ"},
+  config:{name:"Configuration",scenario:"Business Requirement ที่ทำให้ต้อง Configure",summary:"Configuration Concept",content:"Setup / Configuration / Test Scenario",impact:"Impact ต่อ Process / Module",keys:"ข้อควรระวัง"},
+  process:{name:"Business Process",scenario:"Trigger / Business Scenario",summary:"Process Summary",content:"Process Flow / ขั้นตอน",impact:"Integration / Dependency",keys:"Must Know"},
+  integration:{name:"Integration",scenario:"Business Scenario / Source → Target",summary:"Integration Concept",content:"Data Flow / Mapping / Interface",impact:"Dependency / Error Handling",keys:"Monitoring / Key Point"},
+  issue:{name:"Troubleshooting Knowledge",scenario:"อาการ / Error / Scenario ที่เกิด",summary:"Root Cause",content:"วิธีตรวจสอบและวิธีแก้",impact:"ผลกระทบ",keys:"วิธีป้องกัน / สิ่งที่ต้องจำ"},
+  glossary:{name:"Glossary",scenario:"ใช้คำนี้ในบริบทไหน",summary:"ความหมายด้วยภาษาของตัวเอง",content:"ตัวอย่าง / Related Transaction",impact:"เกี่ยวข้องกับ Process / Module",keys:"คำที่มักสับสน"},
+  best:{name:"Best Practice",scenario:"ปัญหาหรือสถานการณ์ที่เจอบ่อย",summary:"Best Practice Summary",content:"แนวทางที่แนะนำ",impact:"Trade-off / Impact",keys:"Do / Don't"}
+};
+const DEFAULT_MODULES=["Finance","Accounting","Sales","Purchasing","Inventory","Manufacturing","CRM","HR","Project","Asset Management","Integration"];
+const DEFAULT_PROCESSES=[
+  {name:"Order to Cash",steps:["Lead/Quote","Sales Order","Delivery","Invoice","Payment"],modules:["Sales","Inventory","Finance","Accounting"]},
+  {name:"Procure to Pay",steps:["Request","Purchase Order","Receipt","Vendor Invoice","Payment"],modules:["Purchasing","Inventory","Finance","Accounting"]},
+  {name:"Record to Report",steps:["Post","Adjust","Reconcile","Close","Report"],modules:["Finance","Accounting"]},
+  {name:"Plan to Produce",steps:["Plan","MRP","Production","Receipt","Cost"],modules:["Manufacturing","Inventory","Purchasing"]},
+  {name:"Inventory Management",steps:["Receive","Move","Count","Adjust","Issue"],modules:["Inventory","Purchasing","Sales","Manufacturing"]},
+  {name:"Hire to Retire",steps:["Hire","Maintain","Payroll","Develop","Exit"],modules:["HR"]},
+  {name:"Project to Profit",steps:["Plan","Execute","Time/Cost","Bill","Analyze"],modules:["Project","Finance","Accounting"]}
+];
+
+let db,records=[],catalog={modules:[],processes:[]},editingId=null,editingType="feature",attachmentDraft=[],saveTimer=null,selectedRelated=new Set(),sourceInboxId=null,editingProcessIndex=null;
+let reviewDeck=[],reviewIndex=0,reviewResults=[],answerVisible=false,reviewFinished=false,reviewMode="due";
+
+const CLOUD_SCOPE="https://www.googleapis.com/auth/drive.file";
+const CLOUD_FOLDER="ERP Consultant Hub";
+const CLOUD_ATTACHMENTS_FOLDER="Attachments";
+const CLOUD_DATA_FILE="erp-consultant-hub-v4-data.json";
+let cloud={
+  accessToken:null,tokenClient:null,rootFolderId:null,attachmentsFolderId:null,dataFileId:null,
+  syncing:false,conflict:false,dirty:localStorage.getItem("erpHubCloudDirty")==="1",
+  lastRemoteModified:localStorage.getItem("erpHubCloudRemoteModified")||null,
+  lastSyncAt:localStorage.getItem("erpHubCloudLastSync")||null
+};
+let cloudApplyingRemote=false,cloudSyncTimer=null;
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2);
+const fmt=d=>{try{return new Intl.DateTimeFormat("th-TH",{dateStyle:"medium"}).format(new Date(d))}catch{return""}};
+const toast=s=>{const t=$("toast");t.textContent=s;t.classList.add("on");setTimeout(()=>t.classList.remove("on"),1700)};
+
+function modalIsOpen(id){const el=$(id);return !!el&&el.classList.contains("on")}
+function syncOverlay(){
+  const open=modalIsOpen("editorDrawer")||modalIsOpen("masterModal")||modalIsOpen("processEditorModal")||modalIsOpen("quickModal")||modalIsOpen("cloudModal")||modalIsOpen("confirmModal")||$("sidebar").classList.contains("on");
+  $("overlay").classList.toggle("on",open);
+}
+function setBusy(el,on){if(el)el.classList.toggle("busy",!!on)}
+
+let confirmResolver=null;
+function appConfirm(message,{title="ยืนยันการทำรายการ",okText="ยืนยัน",danger=true}={}){
+  if(confirmResolver){const old=confirmResolver;confirmResolver=null;old(false)}
+  return new Promise(resolve=>{
+    confirmResolver=resolve;
+    $("confirmTitle").textContent=title;
+    $("confirmMessage").textContent=message;
+    $("confirmOkBtn").textContent=okText;
+    $("confirmOkBtn").style.background=danger?"var(--red)":"var(--primary)";
+    $("confirmModal").classList.add("on");
+    syncOverlay();
+    setTimeout(()=>$("confirmOkBtn").focus(),30);
+  });
+}
+function closeConfirm(result=false){
+  if(!$("confirmModal").classList.contains("on"))return;
+  $("confirmModal").classList.remove("on");
+  const r=confirmResolver;confirmResolver=null;
+  syncOverlay();
+  if(r)r(result);
+}
+
+const bytes=n=>n<1024?n+" B":n<1048576?(n/1024).toFixed(1)+" KB":(n/1048576).toFixed(1)+" MB";
+const statusName=s=>({learning:"กำลังเรียน",usable:"ใช้งานได้",mastered:"อธิบายคนอื่นได้"})[s]||"กำลังเรียน";
+const todayStart=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
+
+function openDB(){
+  return new Promise((resolve,reject)=>{
+    const r=indexedDB.open("erpConsultantHubDB",3);
+    r.onupgradeneeded=()=>{
+      const d=r.result;
+      if(!d.objectStoreNames.contains("notes")) d.createObjectStore("notes",{keyPath:"id"});
+      if(!d.objectStoreNames.contains("masters")) d.createObjectStore("masters",{keyPath:"id"});
+    };
+    r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);
+  });
+}
+function store(name,mode="readonly"){return db.transaction(name,mode).objectStore(name)}
+function getAllRecords(){return new Promise((resolve,reject)=>{const r=store("notes").getAll();r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error)})}
+function putRecord(x){return new Promise((resolve,reject)=>{const r=store("notes","readwrite").put(x);r.onsuccess=()=>{if(!cloudApplyingRemote)markCloudDirty();resolve(x)};r.onerror=()=>reject(r.error)})}
+function deleteRecord(id){return new Promise((resolve,reject)=>{const r=store("notes","readwrite").delete(id);r.onsuccess=()=>{if(!cloudApplyingRemote)markCloudDirty();resolve()};r.onerror=()=>reject(r.error)})}
+function clearRecords(){return new Promise((resolve,reject)=>{const r=store("notes","readwrite").clear();r.onsuccess=()=>resolve();r.onerror=()=>reject(r.error)})}
+function getCatalog(){return new Promise((resolve,reject)=>{const r=store("masters").get("catalogV3");r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error)})}
+function saveCatalog(){return new Promise((resolve,reject)=>{const r=store("masters","readwrite").put({id:"catalogV3",modules:catalog.modules,processes:catalog.processes});r.onsuccess=()=>{if(!cloudApplyingRemote)markCloudDirty();resolve()};r.onerror=()=>reject(r.error)})}
+
+async function initCatalog(){
+  const saved=await getCatalog();
+  if(saved){
+    catalog.modules=(saved.modules||[]).map(String);
+    catalog.processes=(saved.processes||[]).map(p=>{
+      if(typeof p==="string")return {name:p,steps:[],modules:null};
+      return {name:p.name,steps:Array.isArray(p.steps)?p.steps:[],modules:Array.isArray(p.modules)?p.modules:null};
+    });
+  }else{
+    catalog={modules:[...DEFAULT_MODULES],processes:DEFAULT_PROCESSES.map(p=>({name:p.name,steps:[...p.steps],modules:[...(p.modules||[])]}))};
+    await saveCatalog();
+  }
+}
+async function migrateProcessModuleMappings(){
+  let changed=false;
+  for(const p of catalog.processes){
+    if(Array.isArray(p.modules))continue;
+    const defaultMatch=DEFAULT_PROCESSES.find(d=>d.name===p.name);
+    const observed=[...new Set(records.filter(r=>!r.deleted&&r.process===p.name&&r.module).map(r=>r.module))];
+    p.modules=[...new Set([...(defaultMatch?.modules||[]),...observed])].filter(m=>catalog.modules.includes(m));
+    changed=true;
+  }
+  if(changed)await saveCatalog();
+}
+function knowledge(){return records.filter(r=>(r.kind||"knowledge")==="knowledge"&&!r.deleted)}
+function inbox(){return records.filter(r=>r.kind==="inbox"&&!r.deleted)}
+function trashItems(){return records.filter(r=>(r.kind||"knowledge")==="knowledge"&&r.deleted)}
+function processNames(){return catalog.processes.map(p=>p.name)}
+function processMatchesModule(p,moduleName){
+  if(!moduleName)return true;
+  return Array.isArray(p.modules)&&p.modules.includes(moduleName);
+}
+function processesForModule(moduleName){
+  return catalog.processes.filter(p=>processMatchesModule(p,moduleName));
+}
+function setProcessOptions(processId,moduleName,{allLabel="— ไม่ระบุ Process —",preserveLegacy=true,resetInvalid=false}={}){
+  const el=$(processId),current=el.value;
+  const list=processesForModule(moduleName);
+  el.innerHTML=`<option value="">${esc(allLabel)}</option>`+list.map(p=>`<option value="${esc(p.name)}">${esc(p.name)}</option>`).join("");
+  if(current&&list.some(p=>p.name===current))el.value=current;
+  else if(current&&preserveLegacy&&!resetInvalid){
+    const o=document.createElement("option");o.value=current;o.textContent=current+" (เดิม)";el.appendChild(o);el.value=current;
+  }else el.value="";
+}
+function updateKnowledgeProcessOptions(resetInvalid=false){
+  setProcessOptions("process",$("module").value,{resetInvalid,preserveLegacy:!resetInvalid});
+}
+function updateQuickProcessOptions(resetInvalid=false){
+  setProcessOptions("quickProcess",$("quickModule").value,{resetInvalid,preserveLegacy:!resetInvalid});
+}
+function updateFilterProcessOptions(resetInvalid=true){
+  const current=$("processFilter").value,moduleName=$("moduleFilter").value;
+  const list=processesForModule(moduleName);
+  $("processFilter").innerHTML=`<option value="">ทุก Process</option>`+list.map(p=>`<option value="${esc(p.name)}">${esc(p.name)}</option>`).join("");
+  if(current&&list.some(p=>p.name===current))$("processFilter").value=current;
+  else $("processFilter").value="";
+}
+function dueCards(all=false){
+  const now=todayStart();
+  return knowledge().flatMap(n=>(n.cards||[]).filter(c=>c.q?.trim()).map(c=>({...c,noteId:n.id,noteTitle:n.title,module:n.module,process:n.process})))
+    .filter(c=>all||!c.stats?.dueAt||new Date(c.stats.dueAt)<=now);
+}
+function searchFilter(arr){
+  const q=$("searchInput").value.trim().toLowerCase();
+  return arr.filter(r=>!q||[r.title,r.module,r.process,r.scenario,r.summary,r.content,r.impact,r.keys,r.followup,...(r.tags||[])].join(" ").toLowerCase().includes(q));
+}
+async function refresh(){records=await getAllRecords();await migrateProcessModuleMappings();renderAll()}
+
+function empty(msg="ยังไม่มีข้อมูล"){return `<div class="empty"><h3>${esc(msg)}</h3><p>เริ่มบันทึกรายการแรกได้เลย</p></div>`}
+function relatedNames(ids){return (ids||[]).map(id=>records.find(r=>r.id===id)).filter(Boolean).map(r=>r.title)}
+function cardHTML(r){
+  const due=(r.cards||[]).filter(c=>c.q?.trim()&&(!c.stats?.dueAt||new Date(c.stats.dueAt)<=todayStart())).length;
+  const links=relatedNames(r.relatedIds).slice(0,3);
+  return `<article class="card" data-id="${r.id}">
+    <div style="display:flex;justify-content:space-between;gap:8px"><div><span class="pill">${esc(TYPES[r.typeKey]?.name||r.type||"Knowledge")}</span>${due?` <span class="dueBadge">${due} due</span>`:""}</div><button class="star ${r.favorite?"on":""}" data-star="${r.id}">${r.favorite?"★":"☆"}</button></div>
+    <h3>${esc(r.title||"ไม่มีชื่อ")}</h3>
+    <p>${esc((r.summary||r.scenario||r.content||"ยังไม่มีรายละเอียด").slice(0,135))}</p>
+    <div class="meta">${r.module?"◉ "+esc(r.module):""}${r.process?" • ⇄ "+esc(r.process):""}${r.attachments?.length?" • 📎 "+r.attachments.length:""}</div>
+    <div class="tags">${(r.tags||[]).slice(0,4).map(t=>`<span class="tag">#${esc(t)}</span>`).join("")}</div>
+    ${links.length?`<div class="links">${links.map(x=>`<span class="linkBadge">↗ ${esc(x)}</span>`).join("")}</div>`:""}
+    <div class="foot"><span class="status ${r.status||"learning"}">${statusName(r.status)}</span><small>${fmt(r.updatedAt)}</small></div>
+  </article>`;
+}
+
+function renderSelectors(){
+  const moduleOpts=`<option value="">— ไม่ระบุ Module —</option>`+catalog.modules.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join("");
+  ["module","quickModule"].forEach(id=>{const el=$(id),v=el.value;el.innerHTML=moduleOpts;if(v&&!catalog.modules.includes(v)){const o=document.createElement("option");o.value=v;o.textContent=v+" (เดิม)";el.appendChild(o)}el.value=v});
+  const filterModule=$("moduleFilter").value;
+  $("moduleFilter").innerHTML=`<option value="">ทุก Module</option>`+catalog.modules.map(x=>`<option>${esc(x)}</option>`).join("");
+  if(filterModule&&catalog.modules.includes(filterModule))$("moduleFilter").value=filterModule;
+  updateKnowledgeProcessOptions(false);
+  updateQuickProcessOptions(false);
+  updateFilterProcessOptions(false);
+}
+function renderSidebar(){
+  $("moduleList").innerHTML=catalog.modules.slice(0,8).map(x=>`<button class="sideBtn" data-module="${esc(x)}">◉ ${esc(x)}</button>`).join("");
+  $("processList").innerHTML=catalog.processes.slice(0,7).map(x=>`<button class="sideBtn" data-process="${esc(x.name)}">⇄ ${esc(x.name)}</button>`).join("");
+}
+function renderStats(){
+  $("statKnowledge").textContent=knowledge().length;
+  $("statInbox").textContent=inbox().length;
+  $("statDue").textContent=dueCards(false).length;
+  $("statCoverage").textContent=new Set(knowledge().map(x=>x.process).filter(Boolean)).size;
+}
+function renderDashboard(){
+  const recent=[...knowledge()].sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt)).slice(0,5);
+  $("recentKnowledge").innerHTML=recent.length?recent.map(r=>`<div class="recentRow" data-id="${r.id}"><b>${esc(r.title)}</b><small>${esc(TYPES[r.typeKey]?.name||"Knowledge")}${r.module?" • "+esc(r.module):""}${r.process?" • "+esc(r.process):""}</small></div>`).join(""):empty("ยังไม่มี Knowledge");
+  const actions=[];
+  if(inbox().length)actions.push(`<div class="recentRow" data-go="inbox"><b>⌁ Inbox ${inbox().length} รายการ</b><small>จัดสิ่งที่จดเร็วให้เป็น Knowledge</small></div>`);
+  if(dueCards(false).length)actions.push(`<div class="recentRow" data-go="learning"><b>◫ ${dueCards(false).length} Flashcard ถึงกำหนด</b><small>ทบทวนวันนี้</small></div>`);
+  if(!actions.length)actions.push(`<div class="recentRow"><b>✓ ไม่มีรายการเร่งด่วน</b><small>Inbox ว่างและไม่มี Flashcard ถึงกำหนด</small></div>`);
+  $("nextActions").innerHTML=actions.join("");
+}
+function renderKnowledge(){
+  let arr=searchFilter(knowledge());
+  const t=$("typeFilter").value,m=$("moduleFilter").value,p=$("processFilter").value,s=$("statusFilter").value;
+  if(t)arr=arr.filter(x=>x.typeKey===t);if(m)arr=arr.filter(x=>x.module===m);if(p)arr=arr.filter(x=>x.process===p);if(s)arr=arr.filter(x=>x.status===s);
+  arr.sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
+  $("knowledgeGrid").innerHTML=arr.length?arr.map(cardHTML).join(""):empty("ยังไม่มี Knowledge");
+}
+function renderProcesses(){
+  $("processGrid").innerHTML=catalog.processes.map(p=>{
+    const ks=knowledge().filter(k=>k.process===p.name);
+    const modules=Array.isArray(p.modules)?p.modules:[];
+    const coverage=Math.min(100,Math.round((ks.length/Math.max(1,p.steps.length||5))*100));
+    return `<article class="processCard" data-process-card="${esc(p.name)}"><span class="pill">${ks.length} Knowledge</span><h3>${esc(p.name)}</h3><p>${modules.length?modules.map(esc).join(" • "):"ยังไม่ได้ผูก Module"}</p><div class="processSteps">${(p.steps||[]).map(s=>`<span class="step">${esc(s)}</span>`).join("")||"<span class='step'>ยังไม่ได้กำหนด Step</span>"}</div><div class="coverageBar"><span style="width:${coverage}%"></span></div></article>`;
+  }).join("")||empty("ยังไม่มี Process");
+}
+function renderInbox(){
+  const arr=[...inbox()].sort((a,b)=>new Date(b.createdAt)-new Date(a.createdAt));
+  $("inboxGrid").innerHTML=arr.length?arr.map(r=>`<article class="inboxCard"><span class="pill">${r.module?esc(r.module):"Quick Note"}</span><h3>${esc(r.title||"ไม่มีชื่อ")}</h3><p>${esc(r.text||"")}</p><div class="meta">${r.process?"⇄ "+esc(r.process):""} • ${fmt(r.createdAt)}</div><div class="inboxActions"><button class="btn primary" data-convert="${r.id}">Convert to Knowledge</button><button class="btn secondary" data-delete-inbox="${r.id}">ลบ</button></div></article>`).join(""):empty("Inbox ว่าง");
+}
+
+function renderTrash(){
+  const arr=[...trashItems()].sort((a,b)=>new Date(b.deletedAt||b.updatedAt)-new Date(a.deletedAt||a.updatedAt));
+  $("trashGrid").innerHTML=arr.length?arr.map(r=>`<article class="trashCard">
+    <span class="pill">${esc(TYPES[r.typeKey]?.name||"Knowledge")}</span>
+    <h3>${esc(r.title||"ไม่มีชื่อ")}</h3>
+    <p>${esc((r.summary||r.scenario||r.content||"").slice(0,150))||"ไม่มีรายละเอียด"}</p>
+    <div class="meta">${r.module?"◉ "+esc(r.module):""}${r.process?" • ⇄ "+esc(r.process):""}${r.deletedAt?" • ลบ "+fmt(r.deletedAt):""}</div>
+    <div class="trashActions">
+      <button class="btn secondary" data-restore="${r.id}">↩ กู้คืน</button>
+      <button class="btn btnDanger" data-permanent-delete="${r.id}">ลบถาวร</button>
+    </div>
+  </article>`).join(""):empty("ถังขยะว่าง");
+}
+
+function renderRelatedPicker(){
+  const q=$("relatedSearch").value.trim().toLowerCase();
+  const arr=knowledge().filter(r=>r.id!==editingId&&(!q||(r.title||"").toLowerCase().includes(q))).slice(0,60);
+  $("relatedList").innerHTML=arr.map(r=>`<label class="relatedItem"><input type="checkbox" data-related-id="${r.id}" ${selectedRelated.has(r.id)?"checked":""}><span>${esc(r.title)} <small style="color:var(--muted)">• ${esc(r.module||"")}${r.process?" • "+esc(r.process):""}</small></span></label>`).join("")||"<div style='color:var(--muted);font-size:.8rem'>ไม่พบ Knowledge</div>";
+}
+function renderMasters(){
+  $("masterModules").innerHTML=catalog.modules.map((x,i)=>`<div class="masterItem"><span>${esc(x)}</span><button class="tinyBtn" data-rename-module="${i}">เปลี่ยนชื่อ</button><button class="tinyBtn delete" data-delete-module="${i}">ลบ</button></div>`).join("");
+  $("masterProcesses").innerHTML=catalog.processes.map((x,i)=>`<div class="masterItem"><span>${esc(x.name)}<span class="masterMap">${(x.modules||[]).map(m=>`<span class="tag">${esc(m)}</span>`).join("")||`<span class="tag">ไม่ผูก Module</span>`}</span></span><button class="tinyBtn" data-edit-process="${i}">แก้ไข</button><button class="tinyBtn delete" data-delete-process="${i}">ลบ</button></div>`).join("");
+}
+
+function setGroupCollapsed(groupId,collapsed,key){
+  const el=$(groupId);el.classList.toggle("collapsed",collapsed);localStorage.setItem(key,collapsed?"1":"0");
+}
+function initSidebarGroups(){
+  setGroupCollapsed("moduleGroup",localStorage.getItem("erpHubModulesCollapsed")==="1","erpHubModulesCollapsed");
+  setGroupCollapsed("processGroup",localStorage.getItem("erpHubProcessesCollapsed")==="1","erpHubProcessesCollapsed");
+}
+function markCloudDirty(){
+  if(cloudApplyingRemote)return;
+  cloud.dirty=true;cloud.conflict=false;localStorage.setItem("erpHubCloudDirty","1");updateCloudUI();
+  if(cloud.accessToken&&cloud.lastRemoteModified){
+    clearTimeout(cloudSyncTimer);
+    cloudSyncTimer=setTimeout(()=>syncDrive(false).catch(console.error),5000);
+  }
+}
+function cloudConnected(){return !!cloud.accessToken}
+function cloudClientId(){return localStorage.getItem("erpHubGoogleClientId")||""}
+function updateNetworkStatus(){
+  const online=navigator.onLine;
+  $("networkStatus").innerHTML=`<span class="onlineDot ${online?"":"offlineDot"}"></span>${online?"Online":"Offline"}`;
+}
+function updateCloudUI(message=null){
+  const b=$("cloudStatusBtn");
+  b.className="cloudBtn";
+  let text="☁ Drive";
+  let main="ยังไม่ได้เชื่อม Google Drive";
+  let detail="ข้อมูลในเครื่องยังใช้งานได้ตามปกติ";
+  if(!navigator.onLine){
+    text="☁ Offline";b.classList.add("dirty");
+    main="Offline";detail=cloud.dirty?"มีการแก้ไขในเครื่อง รอ Sync เมื่อกลับมาออนไลน์":"ใช้ Local Cache ได้ตามปกติ";
+  }else if(cloud.conflict){
+    text="⚠ Sync conflict";b.classList.add("conflict");
+    main="พบการแก้ไขทั้งเครื่องและ Drive";detail="เลือก “ใช้ข้อมูลเครื่องนี้” หรือ “โหลดจาก Drive”";
+  }else if(cloud.syncing){
+    text="☁ Syncing…";b.classList.add("syncing");
+    main="กำลัง Sync กับ Google Drive";detail=message||"กำลังอัปโหลด/ดาวน์โหลดข้อมูลและไฟล์แนบ";
+  }else if(cloudConnected()){
+    if(cloud.dirty){text="☁ มีการแก้ไข";b.classList.add("dirty");main="มีข้อมูลใหม่ในเครื่อง";detail="กำลังรอ Sync ไป Google Drive"}
+    else{text="☁ Synced ✓";b.classList.add("connected");main="Google Drive เชื่อมต่อแล้ว";detail=cloud.lastSyncAt?`Sync ล่าสุด ${new Date(cloud.lastSyncAt).toLocaleString("th-TH")}`:"พร้อม Sync"}
+  }else if(cloudClientId()){
+    text="☁ Connect";main="ตั้งค่า Client ID แล้ว";detail="กดเชื่อม Google Drive เพื่อเริ่ม Sync";
+  }
+  b.textContent=text;
+  if($("cloudModalStatus")){$("cloudModalStatus").textContent=main;$("cloudModalDetail").textContent=detail}
+  updateNetworkStatus();
+  $("openDriveFolderBtn").disabled=!cloud.rootFolderId;
+}
+function openCloudModal(){
+  $("googleClientId").value=cloudClientId();
+  $("currentOrigin").textContent=location.origin==="null"?"file:// (Local Mode)":location.origin;
+  $("cloudModal").classList.add("on");syncOverlay();updateCloudUI();
+}
+function closeCloudModal(){$("cloudModal").classList.remove("on");syncOverlay()}
+function saveGoogleClientId(){
+  const id=$("googleClientId").value.trim();
+  if(!id){localStorage.removeItem("erpHubGoogleClientId");cloud.tokenClient=null;updateCloudUI();return}
+  localStorage.setItem("erpHubGoogleClientId",id);cloud.tokenClient=null;toast("บันทึก Google Client ID แล้ว");updateCloudUI();
+}
+async function waitForGoogleIdentity(){
+  for(let i=0;i<40;i++){if(window.google?.accounts?.oauth2)return true;await new Promise(r=>setTimeout(r,100))}
+  return false;
+}
+async function connectGoogleDrive(){
+  if(location.protocol==="file:"){alert("Google OAuth ไม่รองรับการเปิดจาก file:// กรุณา Host แอปผ่าน HTTPS หรือเปิดผ่าน localhost ก่อน");return}
+  if(!navigator.onLine){alert("ขณะนี้ Offline");return}
+  const clientId=cloudClientId();if(!clientId){openCloudModal();alert("กรุณาใส่ Google OAuth Client ID ก่อน");return}
+  if(!await waitForGoogleIdentity()){alert("โหลด Google Identity Services ไม่สำเร็จ กรุณาตรวจอินเทอร์เน็ตแล้วลองใหม่");return}
+  cloud.tokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:clientId,scope:CLOUD_SCOPE,
+    callback:async resp=>{
+      if(resp.error){console.error(resp);toast("เชื่อม Google ไม่สำเร็จ");return}
+      cloud.accessToken=resp.access_token;cloud.conflict=false;updateCloudUI();
+      try{
+        await ensureDriveLayout();
+        const remote=await getRemoteDataInfo();
+        if(remote)cloud.dataFileId=remote.id;
+        updateCloudUI();
+        if(!remote&&records.length){await uploadToDrive(true)}
+        else if(remote&&!records.length){await downloadFromDrive(true)}
+        else if(remote&&records.length&&!cloud.lastRemoteModified){
+          cloud.conflict=true;updateCloudUI();
+          openCloudModal();
+        }else await syncDrive(false);
+      }catch(e){handleCloudError(e)}
+    }
+  });
+  cloud.tokenClient.requestAccessToken({prompt:"consent"});
+}
+function disconnectGoogleDrive(){
+  if(cloud.accessToken&&window.google?.accounts?.oauth2)try{google.accounts.oauth2.revoke(cloud.accessToken,()=>{})}catch{}
+  cloud.accessToken=null;cloud.tokenClient=null;cloud.rootFolderId=null;cloud.attachmentsFolderId=null;cloud.dataFileId=null;cloud.conflict=false;
+  updateCloudUI();toast("ยกเลิกการเชื่อม Google Drive แล้ว");
+}
+async function driveFetch(url,options={}){
+  if(!cloud.accessToken)throw new Error("Google Drive is not connected");
+  const headers=new Headers(options.headers||{});headers.set("Authorization","Bearer "+cloud.accessToken);
+  const res=await fetch(url,{...options,headers});
+  if(res.status===401){cloud.accessToken=null;updateCloudUI();throw new Error("Google access token expired. Please connect again.")}
+  if(!res.ok){const txt=await res.text();throw new Error(`Drive API ${res.status}: ${txt}`)}
+  return res;
+}
+function driveQ(s){return String(s).replace(/\\/g,"\\\\").replace(/'/g,"\\'")}
+async function driveList(q){
+  const u=new URL("https://www.googleapis.com/drive/v3/files");u.searchParams.set("q",q);u.searchParams.set("fields","files(id,name,mimeType,modifiedTime,parents,appProperties)");u.searchParams.set("pageSize","100");
+  return (await (await driveFetch(u)).json()).files||[];
+}
+async function createDriveFolder(name,parentId=null){
+  const meta={name,mimeType:"application/vnd.google-apps.folder"};if(parentId)meta.parents=[parentId];
+  const res=await driveFetch("https://www.googleapis.com/drive/v3/files?fields=id,name,modifiedTime",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(meta)});
+  return res.json();
+}
+async function ensureDriveLayout(){
+  if(cloud.rootFolderId&&cloud.attachmentsFolderId)return;
+  let q=`name = '${driveQ(CLOUD_FOLDER)}' and mimeType = 'application/vnd.google-apps.folder' and trashed = false`;
+  let f=(await driveList(q))[0];if(!f)f=await createDriveFolder(CLOUD_FOLDER);cloud.rootFolderId=f.id;
+  q=`name = '${driveQ(CLOUD_ATTACHMENTS_FOLDER)}' and '${cloud.rootFolderId}' in parents and mimeType = 'application/vnd.google-apps.folder' and trashed = false`;
+  let a=(await driveList(q))[0];if(!a)a=await createDriveFolder(CLOUD_ATTACHMENTS_FOLDER,cloud.rootFolderId);cloud.attachmentsFolderId=a.id;
+}
+async function getRemoteDataInfo(){
+  await ensureDriveLayout();
+  const q=`name = '${driveQ(CLOUD_DATA_FILE)}' and '${cloud.rootFolderId}' in parents and trashed = false`;
+  const f=(await driveList(q))[0]||null;if(f)cloud.dataFileId=f.id;return f;
+}
+async function multipartUpload(metadata,blob,fields="id,name,modifiedTime"){
+  const boundary="erp_hub_"+Math.random().toString(36).slice(2);
+  const body=new Blob([
+    `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}\r\n`,
+    `--${boundary}\r\nContent-Type: ${blob.type||"application/octet-stream"}\r\n\r\n`,
+    blob,`\r\n--${boundary}--`
+  ]);
+  const res=await driveFetch(`https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=${encodeURIComponent(fields)}`,{method:"POST",headers:{"Content-Type":`multipart/related; boundary=${boundary}`},body});
+  return res.json();
+}
+async function updateDriveFile(fileId,blob,fields="id,name,modifiedTime"){
+  const res=await driveFetch(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media&fields=${encodeURIComponent(fields)}`,{method:"PATCH",headers:{"Content-Type":blob.type||"application/octet-stream"},body:blob});
+  return res.json();
+}
+async function uploadAttachment(att){
+  if(att.driveId)return att.driveId;
+  const meta={name:`${att.id}__${att.name}`,parents:[cloud.attachmentsFolderId],appProperties:{erpHubAttachmentId:att.id}};
+  const created=await multipartUpload(meta,att.blob,"id,name,modifiedTime");att.driveId=created.id;return created.id;
+}
+async function buildCloudManifest(){
+  await ensureDriveLayout();
+  cloudApplyingRemote=true;
+  try{
+    for(const r of records){
+      for(const a of(r.attachments||[])){
+        if(!a.driveId&&a.blob&&a.blob.size>=0)await uploadAttachment(a);
+      }
+      await putRecord(r);
+    }
+  }finally{cloudApplyingRemote=false}
+  const clean=records.map(r=>({...r,attachments:(r.attachments||[]).map(({blob,...meta})=>meta)}));
+  return {app:"ERP Consultant Hub V4.3",version:43,updatedAt:new Date().toISOString(),catalog,records:clean};
+}
+async function uploadToDrive(force=false){
+  if(!navigator.onLine){updateCloudUI();return}
+  if(!cloud.accessToken){await connectGoogleDrive();return}
+  cloud.syncing=true;cloud.conflict=false;updateCloudUI("กำลังอัปโหลดข้อมูล");
+  try{
+    await ensureDriveLayout();
+    if(!force){
+      const remote=await getRemoteDataInfo();
+      if(remote&&cloud.dirty&&cloud.lastRemoteModified&&remote.modifiedTime!==cloud.lastRemoteModified){
+        cloud.conflict=true;cloud.syncing=false;updateCloudUI();openCloudModal();return;
+      }
+    }
+    const manifest=await buildCloudManifest();
+    const blob=new Blob([JSON.stringify(manifest)],{type:"application/json"});
+    let result;
+    if(cloud.dataFileId)result=await updateDriveFile(cloud.dataFileId,blob);
+    else result=await multipartUpload({name:CLOUD_DATA_FILE,parents:[cloud.rootFolderId],appProperties:{erpConsultantHub:"v4"}},blob);
+    cloud.dataFileId=result.id;cloud.lastRemoteModified=result.modifiedTime||new Date().toISOString();cloud.lastSyncAt=new Date().toISOString();cloud.dirty=false;
+    localStorage.setItem("erpHubCloudDirty","0");localStorage.setItem("erpHubCloudRemoteModified",cloud.lastRemoteModified);localStorage.setItem("erpHubCloudLastSync",cloud.lastSyncAt);
+    toast("Sync ไป Google Drive แล้ว");
+  }catch(e){handleCloudError(e)}
+  finally{cloud.syncing=false;updateCloudUI()}
+}
+async function downloadAttachment(meta){
+  if(!meta.driveId)return {...meta,blob:new Blob([],{type:meta.type||"application/octet-stream"})};
+  try{
+    const res=await driveFetch(`https://www.googleapis.com/drive/v3/files/${meta.driveId}?alt=media`);
+    const blob=await res.blob();return {...meta,blob};
+  }catch(e){console.warn("Attachment download failed",meta.name,e);return {...meta,blob:new Blob([],{type:meta.type||"application/octet-stream"}),cloudDownloadFailed:true}}
+}
+async function downloadFromDrive(force=false){
+  if(!cloud.accessToken){await connectGoogleDrive();return}
+  cloud.syncing=true;cloud.conflict=false;updateCloudUI("กำลังโหลดข้อมูลจาก Drive");
+  try{
+    const info=await getRemoteDataInfo();if(!info){toast("ยังไม่มีข้อมูลบน Drive");return}
+    const res=await driveFetch(`https://www.googleapis.com/drive/v3/files/${info.id}?alt=media`);
+    const manifest=await res.json();if(!Array.isArray(manifest.records))throw new Error("Invalid ERP Hub cloud data");
+    cloudApplyingRemote=true;
+    try{
+      await clearRecords();
+      if(manifest.catalog){
+        catalog={modules:(manifest.catalog.modules||[]).map(String),processes:(manifest.catalog.processes||[]).map(p=>typeof p==="string"?{name:p,steps:[],modules:null}:{name:p.name,steps:p.steps||[],modules:Array.isArray(p.modules)?p.modules:null})};
+        await saveCatalog();
+      }
+      for(const r of manifest.records){
+        const at=[];for(const a of(r.attachments||[]))at.push(await downloadAttachment(a));
+        await putRecord({...r,attachments:at});
+      }
+    }finally{cloudApplyingRemote=false}
+    records=await getAllRecords();
+    cloud.dataFileId=info.id;cloud.lastRemoteModified=info.modifiedTime;cloud.lastSyncAt=new Date().toISOString();cloud.dirty=false;
+    localStorage.setItem("erpHubCloudDirty","0");localStorage.setItem("erpHubCloudRemoteModified",cloud.lastRemoteModified);localStorage.setItem("erpHubCloudLastSync",cloud.lastSyncAt);
+    renderAll();toast("โหลดข้อมูลจาก Google Drive แล้ว");
+  }catch(e){handleCloudError(e)}
+  finally{cloud.syncing=false;updateCloudUI()}
+}
+async function syncDrive(manual=true){
+  if(!navigator.onLine){updateCloudUI();if(manual)toast("Offline — จะ Sync เมื่อออนไลน์");return}
+  if(!cloud.accessToken){if(manual)await connectGoogleDrive();return}
+  if(cloud.syncing)return;
+  try{
+    const remote=await getRemoteDataInfo();
+    if(!remote){await uploadToDrive(true);return}
+    if(!records.length){await downloadFromDrive(true);return}
+    if(!cloud.lastRemoteModified){
+      cloud.conflict=true;updateCloudUI();if(manual)openCloudModal();return;
+    }
+    const remoteChanged=remote.modifiedTime!==cloud.lastRemoteModified;
+    if(remoteChanged&&cloud.dirty){cloud.conflict=true;updateCloudUI();if(manual)openCloudModal();return}
+    if(remoteChanged&&!cloud.dirty){await downloadFromDrive(true);return}
+    if(cloud.dirty){await uploadToDrive(false);return}
+    cloud.lastSyncAt=new Date().toISOString();localStorage.setItem("erpHubCloudLastSync",cloud.lastSyncAt);updateCloudUI();if(manual)toast("ข้อมูล Sync อยู่แล้ว");
+  }catch(e){handleCloudError(e)}
+}
+function handleCloudError(e){
+  console.error(e);cloud.syncing=false;updateCloudUI();
+  const msg=String(e?.message||e);
+  if(msg.includes("401"))toast("Google session หมดอายุ กรุณาเชื่อมใหม่");
+  else toast("Cloud Sync มีปัญหา — เปิด Cloud Settings เพื่อตรวจสอบ");
+}
+
+function renderAll(){renderSelectors();renderSidebar();renderStats();renderDashboard();renderKnowledge();renderProcesses();renderInbox();renderTrash();renderReview();renderMasters()}
+
+function showView(name){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));$(name+"View").classList.add("active");
+  document.querySelectorAll(".navBtn").forEach(b=>b.classList.toggle("active",b.dataset.view===name));
+  if(name==="learning")renderReview();
+  if(name==="trash")renderTrash();
+  if(innerWidth<800){$("sidebar").classList.remove("on");syncOverlay()}
+}
+function applyTemplateUI(key){
+  editingType=key;
+  const t=TYPES[key];
+  document.querySelectorAll("[data-template-key]").forEach(b=>b.classList.toggle("active",b.dataset.templateKey===key));
+  $("scenarioLabel").textContent=t.scenario;$("summaryLabel").textContent=t.summary;$("contentLabel").textContent=t.content;$("impactLabel").textContent=t.impact;$("keysLabel").textContent=t.keys;
+  $("scenarioSection").classList.toggle("hidden",key==="glossary"&&false);
+}
+function blankStats(){return {attempts:0,hard:0,ok:0,easy:0,intervalDays:0,dueAt:null,lastResult:null,lastReviewedAt:null}}
+function addFlash(c={id:uid(),q:"",a:"",stats:blankStats()}){
+  const d=document.createElement("div");d.className="flash";d.dataset.id=c.id;
+  const due=c.stats?.dueAt?` • next ${fmt(c.stats.dueAt)}`:"";
+  d.innerHTML=`<div class="flashTop"><span>REVIEW CARD${due}</span><button type="button" class="danger">ลบ</button></div><input class="fq" placeholder="คำถาม / Scenario" value="${esc(c.q)}"><textarea class="fa" placeholder="คำตอบ / แนวทางวิเคราะห์">${esc(c.a)}</textarea>`;
+  d.querySelector(".danger").onclick=()=>d.remove();d.querySelectorAll("input,textarea").forEach(x=>x.oninput=queueSave);$("flashList").appendChild(d);
+}
+function addFiles(files){[...files].forEach(f=>attachmentDraft.push({id:uid(),name:f.name,type:f.type||"application/octet-stream",size:f.size,blob:f}));renderAttachments();queueSave()}
+function renderAttachments(){
+  $("attachments").innerHTML="";
+  attachmentDraft.forEach(a=>{
+    const d=document.createElement("div");d.className="att";
+    if(a.type.startsWith("image/")){const img=document.createElement("img"),u=URL.createObjectURL(a.blob);img.src=u;img.onload=()=>URL.revokeObjectURL(u);d.appendChild(img)}
+    else{const i=document.createElement("div");i.className="fileIcon";i.textContent=a.type.includes("pdf")?"📕":a.name.match(/\.xlsx?|\.csv/i)?"📊":a.name.match(/\.docx?/i)?"📘":"📄";d.appendChild(i)}
+    const n=document.createElement("div");n.className="attName";n.textContent=a.name;d.appendChild(n);
+    const s=document.createElement("small");s.textContent=bytes(a.size||0);d.appendChild(s);
+    const bs=document.createElement("div");bs.className="attBtns";
+    const open=document.createElement("button");open.textContent="เปิด";open.onclick=()=>{const u=URL.createObjectURL(a.blob);window.open(u,"_blank");setTimeout(()=>URL.revokeObjectURL(u),60000)};
+    const rm=document.createElement("button");rm.textContent="ลบ";rm.onclick=()=>{attachmentDraft=attachmentDraft.filter(x=>x.id!==a.id);renderAttachments();queueSave()};
+    bs.append(open,rm);d.appendChild(bs);$("attachments").appendChild(d);
+  });
+}
+
+function ensureSelectValue(id,value){
+  const el=$(id);if(!value){el.value="";return}
+  if(![...el.options].some(o=>o.value===value)){const o=document.createElement("option");o.value=value;o.textContent=value+" (เดิม)";el.appendChild(o)}
+  el.value=value;
+}
+
+function openEditor(id=null,prefill=null){
+  editingId=id;sourceInboxId=prefill?.sourceInboxId||null;attachmentDraft=[];selectedRelated=new Set();$("flashList").innerHTML="";
+  const r=records.find(x=>x.id===id);
+  if(r){
+    editingType=r.typeKey||"feature";$("editorEyebrow").textContent="EDIT KNOWLEDGE";$("editorHeading").textContent="แก้ไข Knowledge";
+    $("title").value=r.title||"";$("status").value=r.status||"learning";ensureSelectValue("module",r.module||"");updateKnowledgeProcessOptions(false);ensureSelectValue("process",r.process||"");$("scenario").value=r.scenario||"";$("summary").value=r.summary||"";$("content").value=r.content||"";$("impact").value=r.impact||"";$("keys").value=r.keys||"";$("followup").value=r.followup||"";$("tags").value=(r.tags||[]).join(", ");
+    attachmentDraft=(r.attachments||[]).map(x=>({...x}));selectedRelated=new Set(r.relatedIds||[]);(r.cards||[]).forEach(addFlash);
+  }else{
+    editingType=prefill?.typeKey||"feature";$("editorEyebrow").textContent="NEW KNOWLEDGE";$("editorHeading").textContent="เพิ่ม ERP Knowledge";
+    ["title","scenario","summary","content","impact","keys","followup","tags"].forEach(k=>$(k).value="");$("status").value="learning";ensureSelectValue("module",prefill?.module||"");updateKnowledgeProcessOptions(false);ensureSelectValue("process",prefill?.process||"");
+    if(prefill){$("title").value=prefill.title||"";$("scenario").value=prefill.text||""}
+    addFlash();
+  }
+  applyTemplateUI(editingType);$("favoriteBtn").textContent=r?.favorite?"★ Favorite":"☆ Favorite";$("trashBtn").style.visibility=r?"visible":"hidden";
+  renderAttachments();$("relatedSearch").value="";renderRelatedPicker();$("autosaveState").textContent="พร้อมบันทึก • Autosave";$("editorDrawer").classList.add("on");syncOverlay();
+}
+function closeEditor(){clearTimeout(saveTimer);$("editorDrawer").classList.remove("on");syncOverlay()}
+function collect(){
+  const old=records.find(r=>r.id===editingId);
+  const cards=[...document.querySelectorAll(".flash")].map(d=>{const id=d.dataset.id,o=(old?.cards||[]).find(x=>x.id===id);return {id,q:d.querySelector(".fq").value.trim(),a:d.querySelector(".fa").value.trim(),stats:o?.stats||blankStats()}}).filter(x=>x.q||x.a);
+  return {kind:"knowledge",typeKey:editingType,title:$("title").value.trim()||"ไม่มีชื่อ",status:$("status").value,module:$("module").value,process:$("process").value,scenario:$("scenario").value.trim(),summary:$("summary").value.trim(),content:$("content").value.trim(),impact:$("impact").value.trim(),keys:$("keys").value.trim(),followup:$("followup").value.trim(),tags:[...new Set($("tags").value.split(",").map(x=>x.trim()).filter(Boolean))],relatedIds:[...selectedRelated],attachments:attachmentDraft,cards}
+}
+async function saveEditor(auto=false){
+  const data=collect(),now=new Date().toISOString();let r=records.find(x=>x.id===editingId);
+  if(r)r={...r,...data,updatedAt:now};else{r={id:uid(),...data,favorite:false,deleted:false,createdAt:now,updatedAt:now};editingId=r.id;$("trashBtn").style.visibility="visible"}
+  await putRecord(r);
+  if(sourceInboxId){await deleteRecord(sourceInboxId);sourceInboxId=null}
+  await refresh();$("autosaveState").textContent=auto?"บันทึกอัตโนมัติแล้ว":"บันทึกแล้ว";if(!auto)toast("บันทึก Knowledge แล้ว");
+}
+function queueSave(){clearTimeout(saveTimer);$("autosaveState").textContent="กำลังแก้ไข…";saveTimer=setTimeout(()=>saveEditor(true).catch(console.error),900)}
+
+function startReview(all=false){
+  reviewMode=all?"all":"due";reviewDeck=dueCards(all);reviewIndex=0;reviewResults=[];answerVisible=false;reviewFinished=false;renderReview();
+}
+function calcNextStats(stats,result){
+  const s={...(stats||blankStats())};s.attempts=(s.attempts||0)+1;s[result]=(s[result]||0)+1;s.lastResult=result;s.lastReviewedAt=new Date().toISOString();
+  let days=s.intervalDays||0;
+  if(result==="hard")days=1;
+  else if(result==="ok")days=days?Math.max(3,Math.round(days*1.8)):3;
+  else days=days?Math.max(7,Math.round(days*2.5)):7;
+  days=Math.min(days,90);s.intervalDays=days;
+  const due=new Date();due.setHours(0,0,0,0);due.setDate(due.getDate()+days);s.dueAt=due.toISOString();
+  return s;
+}
+async function rateReview(result){
+  const c=reviewDeck[reviewIndex],n=records.find(x=>x.id===c.noteId),stored=(n.cards||[]).find(x=>x.id===c.id);
+  if(stored){stored.stats=calcNextStats(stored.stats,result);await putRecord(n)}
+  reviewResults.push({...c,result});
+  if(reviewIndex===reviewDeck.length-1)reviewFinished=true;else reviewIndex++;
+  answerVisible=false;await refresh();renderReview();
+}
+function renderReview(){
+  const due=dueCards(false).length;
+  if(reviewFinished){
+    const h=reviewResults.filter(x=>x.result==="hard").length,o=reviewResults.filter(x=>x.result==="ok").length,e=reviewResults.filter(x=>x.result==="easy").length;
+    const score=Math.round(reviewResults.reduce((s,x)=>s+(x.result==="easy"?1:x.result==="ok"?.5:0),0)/reviewResults.length*100);
+    $("reviewArea").innerHTML=`<div class="summaryBox"><div class="eyebrow">SESSION COMPLETE</div><div class="score">${score}%</div><h2>จบรอบทบทวน</h2><p style="color:var(--muted)">ระบบกำหนดวันทบทวนถัดไปให้แต่ละการ์ดแล้ว</p><div class="result"><div><strong>${reviewResults.length}</strong><small>ทั้งหมด</small></div><div><strong>${h}</strong><small>1 วัน</small></div><div><strong>${o}</strong><small>ประมาณ 3+ วัน</small></div><div><strong>${e}</strong><small>ประมาณ 7+ วัน</small></div></div><div class="reviewBtns">${h+o?`<button class="btn primary" id="retryWeakBtn">ทบทวนข้อที่ยังไม่แม่นอีกครั้ง</button>`:""}<button class="btn secondary" id="newDueRoundBtn">ดูการ์ดที่ยัง Due</button></div></div>`;
+    return;
+  }
+  if(!reviewDeck.length){
+    $("reviewArea").innerHTML=`<div class="empty"><h3>${due?"เริ่มรอบทบทวน":"วันนี้ไม่มี Flashcard ถึงกำหนด 🎉"}</h3><p>${due?`มี ${due} การ์ดที่ควรทบทวนวันนี้`:"คุณสามารถกด “ทบทวนทั้งหมด” หากต้องการฝึกเพิ่ม"}</p>${due?`<button class="btn primary" id="startDueBtn">เริ่ม ${due} การ์ด</button>`:""}</div>`;
+    return;
+  }
+  const c=reviewDeck[reviewIndex],done=reviewResults.length,stats=c.stats||blankStats();
+  $("reviewArea").innerHTML=`<div class="review"><div class="reviewMeta"><div><strong>${reviewIndex+1}/${reviewDeck.length}</strong><small>การ์ดปัจจุบัน</small></div><div><strong>${done}</strong><small>ตอบแล้ว</small></div><div><strong>${stats.attempts||0}</strong><small>เคยทบทวนใบนี้</small></div></div><div class="reviewCard"><div class="eyebrow">QUESTION / SCENARIO</div><h2>${esc(c.q)}</h2><div style="color:var(--muted);font-size:.78rem;margin-bottom:14px">${esc(c.noteTitle)}${c.module?" • "+esc(c.module):""}${c.process?" • "+esc(c.process):""}</div>${answerVisible?`<div class="answer"><b>คำตอบ</b><br>${esc(c.a||"ยังไม่มีคำตอบ")}</div>`:`<button class="btn primary" id="showAnswerBtn">เปิดดูคำตอบ</button>`}</div><div class="reviewBtns">${answerVisible?`<button class="btn secondary hard" data-rate="hard">ยังไม่แม่น • 1 วัน</button><button class="btn secondary ok" data-rate="ok">พอจำได้</button><button class="btn secondary easy" data-rate="easy">จำได้แล้ว</button>`:""}</div></div>`;
+}
+
+function openMasterModal(){$("masterModal").classList.add("on");syncOverlay();renderMasters()}
+function closeMasterModal(){$("masterModal").classList.remove("on");syncOverlay()}
+async function addMaster(kind){
+  const input=$(kind==="module"?"newModuleName":"newProcessName"),name=input.value.trim();if(!name)return;
+  if(kind==="module"){
+    if(catalog.modules.includes(name)){alert("มี Module นี้อยู่แล้ว");return}
+    catalog.modules.push(name);catalog.modules.sort((a,b)=>a.localeCompare(b,"th"));input.value="";
+    await saveCatalog();renderAll();toast("เพิ่ม Module แล้ว");
+  }else{
+    openProcessEditor(null,name);
+  }
+}
+async function renameModule(index){
+  const old=catalog.modules[index],next=prompt("เปลี่ยนชื่อ Module",old);if(!next||!next.trim()||next.trim()===old)return;
+  const name=next.trim();if(catalog.modules.includes(name)){alert("มีชื่อนี้อยู่แล้ว");return}
+  catalog.modules[index]=name;
+  for(const p of catalog.processes){if(Array.isArray(p.modules))p.modules=p.modules.map(m=>m===old?name:m)}
+  await saveCatalog();
+  for(const r of records){if(r.module===old){r.module=name;await putRecord(r)}}
+  await refresh();toast("เปลี่ยนชื่อ Module และ Mapping แล้ว");
+}
+function renderProcessModuleChecks(selected=[]){
+  const set=new Set(selected);
+  $("processModuleChecks").innerHTML=catalog.modules.map(m=>`<label class="processModuleCheck"><input type="checkbox" value="${esc(m)}" ${set.has(m)?"checked":""}><span>${esc(m)}</span></label>`).join("")||"<div style='color:var(--muted);font-size:.8rem'>ยังไม่มี Module กรุณาสร้าง Module ก่อน</div>";
+}
+function openProcessEditor(index=null,prefillName=""){
+  editingProcessIndex=index;
+  const p=index===null?null:catalog.processes[index];
+  $("processEditorTitle").textContent=p?"แก้ไข Process":"เพิ่ม Process";
+  $("processEditName").value=p?.name||prefillName||"";
+  $("processEditSteps").value=(p?.steps||[]).join(", ");
+  renderProcessModuleChecks(p?.modules||[]);
+  $("processEditorModal").classList.add("on");syncOverlay();
+  setTimeout(()=>$("processEditName").focus(),30);
+}
+function closeProcessEditor(){$("processEditorModal").classList.remove("on");editingProcessIndex=null;syncOverlay()}
+async function saveProcessEditor(){
+  const name=$("processEditName").value.trim();if(!name){toast("กรุณาใส่ชื่อ Process");return}
+  const duplicate=catalog.processes.findIndex((p,i)=>p.name===name&&i!==editingProcessIndex);
+  if(duplicate>=0){alert("มี Process ชื่อนี้อยู่แล้ว");return}
+  const steps=$("processEditSteps").value.split(",").map(x=>x.trim()).filter(Boolean);
+  const modules=[...$("processModuleChecks").querySelectorAll('input[type="checkbox"]:checked')].map(x=>x.value);
+  const old=editingProcessIndex===null?null:catalog.processes[editingProcessIndex]?.name;
+  if(editingProcessIndex===null)catalog.processes.push({name,steps,modules});
+  else catalog.processes[editingProcessIndex]={...catalog.processes[editingProcessIndex],name,steps,modules};
+  catalog.processes.sort((a,b)=>a.name.localeCompare(b.name,"th"));
+  await saveCatalog();
+  if(old&&old!==name){for(const r of records){if(r.process===old){r.process=name;await putRecord(r)}}}
+  $("newProcessName").value="";
+  closeProcessEditor();await refresh();toast(old?"อัปเดต Process แล้ว":"เพิ่ม Process แล้ว");
+}
+async function deleteMaster(kind,index){
+  const arr=kind==="module"?catalog.modules:catalog.processes;
+  if(!Number.isInteger(index)||index<0||index>=arr.length){toast("ไม่พบรายการที่ต้องการลบ");return}
+  const old=kind==="module"?arr[index]:arr[index].name;
+  const ok=await appConfirm(`ลบ "${old}" ออกจากรายการสำหรับเลือกหรือไม่?
+
+Knowledge เดิมที่เคยใช้ค่านี้จะยังเก็บค่าเดิมไว้`,{title:kind==="module"?"ลบ Module":"ลบ Process",okText:"ลบ"});
+  if(!ok)return;
+  arr.splice(index,1);
+  if(kind==="module"){for(const p of catalog.processes){if(Array.isArray(p.modules))p.modules=p.modules.filter(m=>m!==old)}}
+  await saveCatalog();
+  renderAll();
+  toast(`ลบ ${kind==="module"?"Module":"Process"} แล้ว`);
+}
+
+function openQuickModal(){$("quickTitle").value="";$("quickText").value="";$("quickModule").value="";$("quickProcess").value="";$("quickModal").classList.add("on");syncOverlay();setTimeout(()=>$("quickTitle").focus(),80)}
+function closeQuickModal(){$("quickModal").classList.remove("on");syncOverlay()}
+async function saveQuick(){
+  const title=$("quickTitle").value.trim(),text=$("quickText").value.trim();if(!title&&!text){alert("กรุณาใส่หัวข้อหรือรายละเอียด");return}
+  const now=new Date().toISOString();await putRecord({id:uid(),kind:"inbox",title:title||"Quick Note",text,module:$("quickModule").value,process:$("quickProcess").value,createdAt:now,updatedAt:now,deleted:false});
+  await refresh();closeQuickModal();toast("บันทึกเข้า Inbox แล้ว");
+}
+async function convertInbox(id){
+  const r=records.find(x=>x.id===id);if(!r)return;
+  openEditor(null,{title:r.title,text:r.text,module:r.module,process:r.process,typeKey:"feature",sourceInboxId:id});
+  toast("เปิดเป็น Knowledge แล้ว • Inbox จะถูกลบหลังบันทึก");
+}
+
+
+async function moveKnowledgeToTrash(id){
+  const r=records.find(x=>x.id===id);if(!r)return false;
+  clearTimeout(saveTimer);
+  r.deleted=true;r.deletedAt=new Date().toISOString();r.updatedAt=r.deletedAt;
+  await putRecord(r);await refresh();return true;
+}
+async function restoreKnowledge(id){
+  const r=records.find(x=>x.id===id);if(!r)return;
+  r.deleted=false;delete r.deletedAt;r.updatedAt=new Date().toISOString();
+  await putRecord(r);await refresh();toast("กู้คืน Knowledge แล้ว");
+}
+async function deleteKnowledgePermanently(id){
+  const r=records.find(x=>x.id===id);if(!r)return;
+  await deleteRecord(id);await refresh();toast("ลบ Knowledge ถาวรแล้ว");
+}
+async function emptyTrash(){
+  const arr=trashItems();if(!arr.length){toast("ถังขยะว่าง");return}
+  const ok=await appConfirm(`ลบ Knowledge ${arr.length} รายการถาวรหรือไม่?\n\nการทำรายการนี้ย้อนกลับไม่ได้`,{title:"ล้างถังขยะ",okText:"ลบถาวร"});
+  if(!ok)return;
+  for(const r of arr)await deleteRecord(r.id);
+  await refresh();toast("ล้างถังขยะแล้ว");
+}
+
+async function blobToDataURL(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(blob)})}
+function dataURLToBlob(s){const [h,b]=s.split(","),mime=(h.match(/data:(.*?);base64/)||[])[1]||"application/octet-stream",bin=atob(b),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return new Blob([u],{type:mime})}
+async function exportAll(){
+  const out=[];for(const r of records){const at=[];for(const a of(r.attachments||[]))at.push({...a,blob:await blobToDataURL(a.blob)});out.push({...r,attachments:at})}
+  const payload={app:"ERP Consultant Hub V4.1",version:4,catalog,records:out},blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"}),u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download="erp-consultant-hub-v4-backup.json";a.click();URL.revokeObjectURL(u);
+}
+async function importAll(file){
+  try{
+    const x=JSON.parse(await file.text()),arr=x.records||x.notes||[];
+    if(!Array.isArray(arr))throw 0;
+    if(x.catalog){catalog={modules:(x.catalog.modules||DEFAULT_MODULES).map(String),processes:(x.catalog.processes||DEFAULT_PROCESSES).map(p=>typeof p==="string"?{name:p,steps:[],modules:null}:{name:p.name,steps:p.steps||[],modules:Array.isArray(p.modules)?p.modules:null})};await saveCatalog()}
+    for(const r of arr){await putRecord({...r,id:r.id||uid(),kind:r.kind||"knowledge",typeKey:r.typeKey||"feature",attachments:(r.attachments||[]).map(a=>({...a,blob:typeof a.blob==="string"?dataURLToBlob(a.blob):a.blob}))})}
+    await refresh();toast("นำเข้าข้อมูลเรียบร้อย");
+  }catch{alert("ไฟล์สำรองไม่ถูกต้อง")}
+  $("importFile").value="";
+}
+
+document.addEventListener("click",async e=>{
+  let x=e.target.closest("[data-view]");if(x){showView(x.dataset.view);return}
+  x=e.target.closest("[data-go]");if(x){showView(x.dataset.go);return}
+  if(e.target.closest("[data-new]")){openEditor();return}
+  x=e.target.closest("[data-template-key]");if(x){applyTemplateUI(x.dataset.templateKey);queueSave();return}
+  x=e.target.closest("[data-star]");if(x){e.stopPropagation();const r=records.find(z=>z.id===x.dataset.star);r.favorite=!r.favorite;await putRecord(r);await refresh();return}
+  x=e.target.closest(".card[data-id],.recentRow[data-id]");if(x&&x.dataset.id){openEditor(x.dataset.id);return}
+  x=e.target.closest("[data-process-card]");if(x){showView("knowledge");$("moduleFilter").value="";updateFilterProcessOptions(true);$("processFilter").value=x.dataset.processCard;renderKnowledge();return}
+  x=e.target.closest("[data-module]");if(x){showView("knowledge");$("moduleFilter").value=x.dataset.module;updateFilterProcessOptions(true);renderKnowledge();return}
+  x=e.target.closest("[data-process]");if(x){showView("knowledge");$("moduleFilter").value="";updateFilterProcessOptions(true);$("processFilter").value=x.dataset.process;renderKnowledge();return}
+  x=e.target.closest("[data-convert]");if(x){convertInbox(x.dataset.convert);return}
+  x=e.target.closest("[data-delete-inbox]");if(x){if(await appConfirm("ลบ Quick Note นี้ออกจาก Inbox หรือไม่?",{title:"ลบ Quick Note",okText:"ลบ"})){await deleteRecord(x.dataset.deleteInbox);await refresh();toast("ลบ Quick Note แล้ว")}return}
+  x=e.target.closest("[data-restore]");if(x){await restoreKnowledge(x.dataset.restore);return}
+  x=e.target.closest("[data-permanent-delete]");if(x){const id=x.dataset.permanentDelete,r=records.find(z=>z.id===id);if(await appConfirm(`ลบ "${r?.title||"Knowledge"}" ถาวรหรือไม่?\n\nการทำรายการนี้ย้อนกลับไม่ได้`,{title:"ลบ Knowledge ถาวร",okText:"ลบถาวร"})){await deleteKnowledgePermanently(id)}return}
+  x=e.target.closest("[data-related-id]");if(x){if(x.checked)selectedRelated.add(x.dataset.relatedId);else selectedRelated.delete(x.dataset.relatedId);queueSave();return}
+  x=e.target.closest("[data-rate]");if(x){rateReview(x.dataset.rate);return}
+  x=e.target.closest("[data-rename-module]");if(x){renameModule(Number(x.dataset.renameModule));return}
+  x=e.target.closest("[data-delete-module]");if(x){deleteMaster("module",Number(x.dataset.deleteModule));return}
+  x=e.target.closest("[data-edit-process]");if(x){openProcessEditor(Number(x.dataset.editProcess));return}
+  x=e.target.closest("[data-delete-process]");if(x){deleteMaster("process",Number(x.dataset.deleteProcess));return}
+  if(e.target.id==="showAnswerBtn"){answerVisible=true;renderReview()}
+  if(e.target.id==="startDueBtn"){startReview(false)}
+  if(e.target.id==="newDueRoundBtn"){startReview(false)}
+  if(e.target.id==="retryWeakBtn"){const set=new Set(reviewResults.filter(r=>r.result!=="easy").map(r=>r.noteId+"::"+r.id));reviewDeck=dueCards(true).filter(c=>set.has(c.noteId+"::"+c.id));reviewIndex=0;reviewResults=[];answerVisible=false;reviewFinished=false;renderReview()}
+});
+
+$("newKnowledgeBtn").onclick=()=>openEditor();
+$("heroNewBtn").onclick=()=>openEditor();
+$("quickCaptureBtn").onclick=openQuickModal;$("quickCaptureBtn2").onclick=openQuickModal;$("heroQuickBtn").onclick=openQuickModal;
+$("closeQuickBtn").onclick=closeQuickModal;$("saveQuickBtn").onclick=saveQuick;
+$("closeEditorBtn").onclick=closeEditor;
+$("menuBtn").onclick=()=>{$("sidebar").classList.add("on");syncOverlay()};
+$("overlay").onclick=()=>{if($("confirmModal").classList.contains("on")){closeConfirm(false);return}closeEditor();closeMasterModal();closeProcessEditor();closeQuickModal();closeCloudModal();$("sidebar").classList.remove("on");syncOverlay()};
+$("saveBtn").onclick=()=>saveEditor(false);
+$("addFlashBtn").onclick=()=>addFlash();
+$("favoriteBtn").onclick=async()=>{if(!editingId)await saveEditor(true);const r=(await getAllRecords()).find(x=>x.id===editingId);r.favorite=!r.favorite;await putRecord(r);await refresh();$("favoriteBtn").textContent=r.favorite?"★ Favorite":"☆ Favorite"};
+$("trashBtn").onclick=async()=>{if(!editingId)return;const r=records.find(x=>x.id===editingId);const ok=await appConfirm(`ย้าย "${r?.title||"Knowledge"}" ไปถังขยะหรือไม่?`,{title:"ย้าย Knowledge ไปถังขยะ",okText:"ย้ายไปถังขยะ"});if(!ok)return;if(await moveKnowledgeToTrash(editingId)){editingId=null;closeEditor();toast("ย้ายไป Trash แล้ว")}};
+
+$("pickFilesBtn").onclick=()=>$("fileInput").click();$("fileInput").onchange=e=>addFiles(e.target.files);
+$("dropZone").ondragover=e=>{e.preventDefault();$("dropZone").classList.add("drag")};$("dropZone").ondragleave=()=>$("dropZone").classList.remove("drag");$("dropZone").ondrop=e=>{e.preventDefault();$("dropZone").classList.remove("drag");addFiles(e.dataTransfer.files)};
+
+$("manageMastersBtn").onclick=openMasterModal;$("manageMastersBtn2").onclick=openMasterModal;$("closeMasterBtn").onclick=closeMasterModal;
+$("closeProcessEditorBtn").onclick=closeProcessEditor;$("cancelProcessEditorBtn").onclick=closeProcessEditor;$("saveProcessEditorBtn").onclick=saveProcessEditor;
+$("addModuleBtn").onclick=()=>addMaster("module");$("addProcessBtn").onclick=()=>addMaster("process");
+$("newModuleName").addEventListener("keydown",e=>{if(e.key==="Enter")addMaster("module")});$("newProcessName").addEventListener("keydown",e=>{if(e.key==="Enter")addMaster("process")});
+
+$("emptyTrashBtn").onclick=emptyTrash;
+$("reviewAllBtn").onclick=()=>startReview(true);
+$("relatedSearch").oninput=renderRelatedPicker;
+$("exportBtn").onclick=exportAll;$("importFile").onchange=e=>e.target.files?.[0]&&importAll(e.target.files[0]);
+$("searchInput").addEventListener("input",renderKnowledge);
+$("typeFilter").addEventListener("change",renderKnowledge);
+$("statusFilter").addEventListener("change",renderKnowledge);
+$("processFilter").addEventListener("change",renderKnowledge);
+$("moduleFilter").addEventListener("change",()=>{updateFilterProcessOptions(true);renderKnowledge()});
+$("module").addEventListener("change",()=>{updateKnowledgeProcessOptions(true);queueSave()});
+$("quickModule").addEventListener("change",()=>updateQuickProcessOptions(true));
+["title","status","process","scenario","summary","content","impact","keys","followup","tags"].forEach(id=>$(id).addEventListener("input",queueSave));
+
+
+$("confirmCancelBtn").onclick=()=>closeConfirm(false);
+$("confirmOkBtn").onclick=()=>closeConfirm(true);
+
+$("moduleToggle").onclick=()=>setGroupCollapsed("moduleGroup",!$("moduleGroup").classList.contains("collapsed"),"erpHubModulesCollapsed");
+$("processToggle").onclick=()=>setGroupCollapsed("processGroup",!$("processGroup").classList.contains("collapsed"),"erpHubProcessesCollapsed");
+
+$("cloudStatusBtn").onclick=openCloudModal;
+$("closeCloudBtn").onclick=closeCloudModal;
+$("saveClientIdBtn").onclick=saveGoogleClientId;
+$("connectDriveBtn").onclick=connectGoogleDrive;
+$("syncDriveBtn").onclick=()=>syncDrive(true);
+$("uploadDriveBtn").onclick=async()=>{if(await appConfirm("อัปโหลดข้อมูลจากเครื่องนี้ขึ้น Drive และใช้เป็นข้อมูลหลักหรือไม่?",{title:"ใช้ข้อมูลเครื่องนี้",okText:"อัปโหลด",danger:false}))uploadToDrive(true)};
+$("downloadDriveBtn").onclick=async()=>{if(await appConfirm("โหลดข้อมูลจาก Drive มาแทนข้อมูลในเครื่องนี้หรือไม่?\n\nข้อมูล Local ปัจจุบันจะถูกแทนที่",{title:"โหลดจาก Google Drive",okText:"โหลดจาก Drive"}))downloadFromDrive(true)};
+$("disconnectDriveBtn").onclick=disconnectGoogleDrive;
+$("openDriveFolderBtn").onclick=()=>{if(cloud.rootFolderId)window.open(`https://drive.google.com/drive/folders/${cloud.rootFolderId}`,"_blank")};
+
+window.addEventListener("online",()=>{updateCloudUI();if(cloud.dirty&&cloud.accessToken&&cloud.lastRemoteModified)syncDrive(false)});
+window.addEventListener("offline",updateCloudUI);
+
+function toggleTheme(){const dark=document.documentElement.dataset.theme==="dark";document.documentElement.dataset.theme=dark?"light":"dark";localStorage.setItem("erpHubThemeV3",dark?"light":"dark")}
+$("themeBtn").onclick=toggleTheme;$("themeBtn2").onclick=toggleTheme;
+document.addEventListener("keydown",e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="s"&&$("editorDrawer").classList.contains("on")){e.preventDefault();saveEditor(false)}
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();openQuickModal()}
+  if(e.key==="Escape"){if($("confirmModal").classList.contains("on")){closeConfirm(false);return}closeEditor();closeMasterModal();closeProcessEditor();closeQuickModal();closeCloudModal();$("sidebar").classList.remove("on");syncOverlay()}
+});
+
+(async()=>{
+  document.documentElement.dataset.theme=localStorage.getItem("erpHubThemeV3")||"light";
+  $("templateButtons").innerHTML=Object.entries(TYPES).map(([k,v])=>`<button type="button" class="templateBtn" data-template-key="${k}">${esc(v.name)}</button>`).join("");
+  $("typeFilter").innerHTML=`<option value="">ทุกประเภท</option>`+Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${esc(v.name)}</option>`).join("");
+  db=await openDB();await initCatalog();await refresh();initSidebarGroups();updateCloudUI();$("googleClientId").value=cloudClientId();$("currentOrigin").textContent=location.origin==="null"?"file:// (Local Mode)":location.origin;showView("dashboard");
+})().catch(e=>{console.error(e);alert("ไม่สามารถเปิดฐานข้อมูลของแอปได้")});
+</script>
+</body>
+</html>
